@@ -2,13 +2,19 @@ package koemdzhiev.com.quickshoppinglist;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import koemdzhiev.com.quickshoppinglist.adapters.ShoppingListAdapter;
+
 
 public class MainActivity extends AppCompatActivity {
     private Toolbar mToolbar;
+    private RecyclerView mRecyclerView;
+    private Item[] shoppingListItems;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -16,6 +22,17 @@ public class MainActivity extends AppCompatActivity {
 
         mToolbar = (Toolbar)findViewById(R.id.tool_bar);
         setSupportActionBar(mToolbar);
+        mRecyclerView = (RecyclerView)findViewById(R.id.recyclerView);
+        shoppingListItems = new Item[3];
+        shoppingListItems[0] = new Item("Apples");
+        shoppingListItems[1] = new Item("Bred");
+        shoppingListItems[2] = new Item("Potatoes");
+
+        ShoppingListAdapter adapter = new ShoppingListAdapter(this,shoppingListItems);
+        mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(getApplicationContext()));
+        mRecyclerView.setAdapter(adapter);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
     }
 
     @Override
