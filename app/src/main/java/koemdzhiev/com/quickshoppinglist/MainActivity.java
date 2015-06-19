@@ -7,6 +7,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -17,10 +19,13 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar mToolbar;
     private RecyclerView mRecyclerView;
     private ArrayList<Item> shoppingListItems;
+    private TextView mEmptyTextView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mEmptyTextView = (TextView)findViewById(R.id.list_empty);
+        mEmptyTextView.setVisibility(View.INVISIBLE);
 
         mToolbar = (Toolbar)findViewById(R.id.tool_bar);
         setSupportActionBar(mToolbar);
@@ -47,8 +52,16 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setAdapter(adapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        isListEmpty();
+
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isListEmpty();
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -69,5 +82,16 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void isListEmpty() {
+        if (mRecyclerView.getAdapter().getItemCount() == 0) {
+            //mRecyclerView.setVisibility(View.GONE);
+            mEmptyTextView.setVisibility(View.VISIBLE);
+        }
+        else {
+            //mRecyclerView.setVisibility(View.GONE);
+            mEmptyTextView.setVisibility(View.INVISIBLE);
+        }
     }
 }

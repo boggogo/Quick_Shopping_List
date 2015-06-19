@@ -58,7 +58,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
 
         public void bindShoppingList(Item item){
             mShoppingListItem.setText(item.getItemDescription());
-            mCheckBox.setChecked(false);// <- this
+            mCheckBox.setChecked(false);
         }
 
 
