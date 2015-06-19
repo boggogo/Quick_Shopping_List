@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import koemdzhiev.com.quickshoppinglist.Item;
 import koemdzhiev.com.quickshoppinglist.R;
@@ -24,7 +25,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
     }
 
     @Override
-    public ShoppingListViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+    public ShoppingListViewHolder onCreateViewHolder(ViewGroup viewGroup, int position) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.shopping_list_item,viewGroup,false);
         ShoppingListViewHolder viewHolder = new ShoppingListViewHolder(view);
 
@@ -41,7 +42,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
         return mItems.length;
     }
 
-    public class ShoppingListViewHolder extends RecyclerView.ViewHolder{
+    public class ShoppingListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         public TextView mShoppingListItem;
         public CheckBox mCheckBox;
 
@@ -49,10 +50,16 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
             super(itemView);
             mShoppingListItem = (TextView) itemView.findViewById(R.id.shoppingListItem);
             mCheckBox = (CheckBox) itemView.findViewById(R.id.shoppingListCheckBox);
+            itemView.setOnClickListener(this);
         }
 
         public void bindShoppingList(Item item){
             mShoppingListItem.setText(item.getItemDescription());
+        }
+
+        @Override
+        public void onClick(View v) {
+            Toast.makeText(mContext,"position"+ getAdapterPosition(),Toast.LENGTH_SHORT).show();
         }
     }
 }
