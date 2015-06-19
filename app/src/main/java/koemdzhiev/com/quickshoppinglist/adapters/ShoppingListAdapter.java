@@ -1,6 +1,7 @@
 package koemdzhiev.com.quickshoppinglist.adapters;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,19 +12,23 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import koemdzhiev.com.quickshoppinglist.Item;
+import koemdzhiev.com.quickshoppinglist.Constants;
 import koemdzhiev.com.quickshoppinglist.R;
 
 /**
  * Created by koemdzhiev on 18/06/2015.
  */
 public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapter.ShoppingListViewHolder> {
-    private ArrayList<Item> mItems;
+    private ArrayList<String> mItems;
     private Context mContext;
+    private SharedPreferences mSharedPreferences;
+    private SharedPreferences.Editor mEditor;
 
-    public ShoppingListAdapter(Context context, ArrayList<Item> items) {
+    public ShoppingListAdapter(Context context, ArrayList<String> items, SharedPreferences preferences,SharedPreferences.Editor editor) {
         mItems = items;
         mContext = context;
+        mSharedPreferences = preferences;
+        mEditor = editor;
     }
 
     @Override
@@ -56,8 +61,8 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
             itemView.setOnClickListener(this);
         }
 
-        public void bindShoppingList(Item item){
-            mShoppingListItem.setText(item.getItemDescription());
+        public void bindShoppingList(String item){
+            mShoppingListItem.setText(item);
             mCheckBox.setChecked(false);
         }
 
@@ -66,13 +71,24 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             if(isChecked){
                 mItems.remove(getAdapterPosition());
+                saveShoppingItems();
                 notifyItemRemoved(getAdapterPosition());
+
             }
         }
 
         @Override
         public void onClick(View v) {
 
+        }
+        //Method to save items to shared preferences
+        private void saveShoppingItems() {
+            //save array list
+            mEditor.putInt(Constants.ARRAY_LIST_SIZE_KEY, mItems.size());
+            for (int i =0;i<mItems.size();i++){
+                mEditor.putString(Constants.ARRAY_LIST_ITEM_KEY + i,mItems.get(i));
+            }
+            mEditor.apply();
         }
     }
 

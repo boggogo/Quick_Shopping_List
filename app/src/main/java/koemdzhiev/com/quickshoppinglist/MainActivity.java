@@ -1,6 +1,9 @@
 package koemdzhiev.com.quickshoppinglist;
 
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -8,7 +11,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
+
+import com.gc.materialdesign.views.ButtonFloat;
 
 import java.util.ArrayList;
 
@@ -18,36 +24,39 @@ import koemdzhiev.com.quickshoppinglist.adapters.ShoppingListAdapter;
 public class MainActivity extends AppCompatActivity {
     private Toolbar mToolbar;
     private RecyclerView mRecyclerView;
-    private ArrayList<Item> shoppingListItems;
+    private ArrayList<String> shoppingListItems;
+    private SharedPreferences mSharedPreferences;
+    private SharedPreferences.Editor mEditor;
     private TextView mEmptyTextView;
+    private int arrayListSizeDefaultValue = 0;
+    private ButtonFloat mFabButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mEmptyTextView = (TextView)findViewById(R.id.list_empty);
         mEmptyTextView.setVisibility(View.INVISIBLE);
+        mSharedPreferences = getPreferences(MODE_PRIVATE);
+        mEditor = mSharedPreferences.edit();
 
+        mFabButton = (ButtonFloat)findViewById(R.id.buttonFloat);
+        mFabButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                buildAlertDialog();
+            }
+        });
         mToolbar = (Toolbar)findViewById(R.id.tool_bar);
         setSupportActionBar(mToolbar);
         mRecyclerView = (RecyclerView)findViewById(R.id.recyclerView);
-        shoppingListItems = new ArrayList<>();
-        shoppingListItems.add(new Item("Apples"));
-        shoppingListItems.add(new Item("Bred"));
-        shoppingListItems.add(new Item("Potatoes"));
-        shoppingListItems.add(new Item("Muffins"));
-        shoppingListItems.add(new Item("Crackers"));
-        shoppingListItems.add(new Item("Spaghetti"));
-        shoppingListItems.add(new Item("Plastic Bags"));
-        shoppingListItems.add(new Item("Deodorant"));
-        shoppingListItems.add(new Item("Razors"));
-        shoppingListItems.add(new Item("Shampoo"));
-        shoppingListItems.add(new Item("Tooth brushes"));
-        shoppingListItems.add(new Item("Butter"));
-        shoppingListItems.add(new Item("Bagels"));
-        shoppingListItems.add(new Item("Coconut water"));
-        shoppingListItems.add(new Item("Tomatoes"));
+        if(shoppingListItems == null){
+              shoppingListItems = new ArrayList<>();
+        }
 
-        ShoppingListAdapter adapter = new ShoppingListAdapter(this,shoppingListItems);
+        //read the array lists
+        readShoppingItems();
+
+        ShoppingListAdapter adapter = new ShoppingListAdapter(this,shoppingListItems,mSharedPreferences,mEditor);
         mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(getApplicationContext()));
         mRecyclerView.setAdapter(adapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -56,12 +65,56 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void readShoppingItems() {
+        int size = mSharedPreferences.getInt(Constants.ARRAY_LIST_SIZE_KEY, arrayListSizeDefaultValue);
+        for(int i = 0;i< size;i++){
+            shoppingListItems.add(mSharedPreferences.getString(Constants.ARRAY_LIST_ITEM_KEY + i,null));
+        }
+    }
+
+    private void saveShoppingItems() {
+        //save array list
+        mEditor.putInt(Constants.ARRAY_LIST_SIZE_KEY, shoppingListItems.size());
+        for (int i =0;i<shoppingListItems.size();i++){
+            mEditor.putString(Constants.ARRAY_LIST_ITEM_KEY + i,shoppingListItems.get(i));
+        }
+        mEditor.apply();
+    }
+
+    private void buildAlertDialog() {
+        final EditText editText = new EditText(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Enter Grocery Item");
+        builder.setTitle("Add Item");
+        builder.setView(editText);
+        builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String str = editText.getText().toString();
+                //add it to shoppingListItems and save to sharedPreferences
+                shoppingListItems.add(str);
+                saveShoppingItems();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // do sth
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
         isListEmpty();
     }
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
