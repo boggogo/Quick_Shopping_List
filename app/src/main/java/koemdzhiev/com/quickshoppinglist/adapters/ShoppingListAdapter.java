@@ -6,8 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import java.util.ArrayList;
 
 import koemdzhiev.com.quickshoppinglist.Item;
 import koemdzhiev.com.quickshoppinglist.R;
@@ -16,10 +18,10 @@ import koemdzhiev.com.quickshoppinglist.R;
  * Created by koemdzhiev on 18/06/2015.
  */
 public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapter.ShoppingListViewHolder> {
-    private Item[] mItems;
+    private ArrayList<Item> mItems;
     private Context mContext;
 
-    public ShoppingListAdapter(Context context, Item[] items) {
+    public ShoppingListAdapter(Context context, ArrayList<Item> items) {
         mItems = items;
         mContext = context;
     }
@@ -34,15 +36,15 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
 
     @Override
     public void onBindViewHolder(ShoppingListViewHolder shoppingListViewHolder, int position) {
-        shoppingListViewHolder.bindShoppingList(mItems[position]);
+        shoppingListViewHolder.bindShoppingList(mItems.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return mItems.length;
+        return mItems.size();
     }
 
-    public class ShoppingListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class ShoppingListViewHolder extends RecyclerView.ViewHolder implements CompoundButton.OnCheckedChangeListener{
         public TextView mShoppingListItem;
         public CheckBox mCheckBox;
 
@@ -50,16 +52,22 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
             super(itemView);
             mShoppingListItem = (TextView) itemView.findViewById(R.id.shoppingListItem);
             mCheckBox = (CheckBox) itemView.findViewById(R.id.shoppingListCheckBox);
-            itemView.setOnClickListener(this);
+            mCheckBox.setOnCheckedChangeListener(this);
         }
 
         public void bindShoppingList(Item item){
             mShoppingListItem.setText(item.getItemDescription());
+            mCheckBox.setChecked(false);// <- this
         }
 
+
         @Override
-        public void onClick(View v) {
-            Toast.makeText(mContext, "position" + getAdapterPosition(), Toast.LENGTH_SHORT).show();
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if(isChecked){
+                mItems.remove(getAdapterPosition());
+                notifyItemRemoved(getAdapterPosition());
+            }
         }
     }
+
 }

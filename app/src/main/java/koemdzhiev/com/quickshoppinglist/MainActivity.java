@@ -8,13 +8,15 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.ArrayList;
+
 import koemdzhiev.com.quickshoppinglist.adapters.ShoppingListAdapter;
 
 
 public class MainActivity extends AppCompatActivity {
     private Toolbar mToolbar;
     private RecyclerView mRecyclerView;
-    private Item[] shoppingListItems;
+    private ArrayList<Item> shoppingListItems;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,10 +25,22 @@ public class MainActivity extends AppCompatActivity {
         mToolbar = (Toolbar)findViewById(R.id.tool_bar);
         setSupportActionBar(mToolbar);
         mRecyclerView = (RecyclerView)findViewById(R.id.recyclerView);
-        shoppingListItems = new Item[3];
-        shoppingListItems[0] = new Item("Apples");
-        shoppingListItems[1] = new Item("Bred");
-        shoppingListItems[2] = new Item("Potatoes");
+        shoppingListItems = new ArrayList<>();
+        shoppingListItems.add(new Item("Apples"));
+        shoppingListItems.add(new Item("Bred"));
+        shoppingListItems.add(new Item("Potatoes"));
+        shoppingListItems.add(new Item("Muffins"));
+        shoppingListItems.add(new Item("Crackers"));
+        shoppingListItems.add(new Item("Spaghetti"));
+        shoppingListItems.add(new Item("Plastic Bags"));
+        shoppingListItems.add(new Item("Deodorant"));
+        shoppingListItems.add(new Item("Razors"));
+        shoppingListItems.add(new Item("Shampoo"));
+        shoppingListItems.add(new Item("Tooth brushes"));
+        shoppingListItems.add(new Item("Butter"));
+        shoppingListItems.add(new Item("Bagels"));
+        shoppingListItems.add(new Item("Coconut water"));
+        shoppingListItems.add(new Item("Tomatoes"));
 
         ShoppingListAdapter adapter = new ShoppingListAdapter(this,shoppingListItems);
         mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(getApplicationContext()));
