@@ -44,7 +44,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
         return mItems.size();
     }
 
-    public class ShoppingListViewHolder extends RecyclerView.ViewHolder implements CompoundButton.OnCheckedChangeListener{
+    public class ShoppingListViewHolder extends RecyclerView.ViewHolder implements CompoundButton.OnCheckedChangeListener, View.OnClickListener{
         public TextView mShoppingListItem;
         public CheckBox mCheckBox;
 
@@ -53,6 +53,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
             mShoppingListItem = (TextView) itemView.findViewById(R.id.shoppingListItem);
             mCheckBox = (CheckBox) itemView.findViewById(R.id.shoppingListCheckBox);
             mCheckBox.setOnCheckedChangeListener(this);
+            itemView.setOnClickListener(this);
         }
 
         public void bindShoppingList(Item item){
@@ -67,6 +68,11 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
                 mItems.remove(getAdapterPosition());
                 notifyItemRemoved(getAdapterPosition());
             }
+        }
+
+        @Override
+        public void onClick(View v) {
+
         }
     }
 
