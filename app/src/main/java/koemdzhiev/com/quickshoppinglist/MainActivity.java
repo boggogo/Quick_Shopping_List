@@ -82,31 +82,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void buildAlertDialog() {
         final String[] str = {""};
-//        final EditText editText = new EditText(this);
-//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//        builder.setMessage("Enter Grocery Item");
-//        builder.setTitle("Add Item");
-//        builder.setView(editText);
-//        builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                String str = editText.getText().toString();
-//                //add it to shoppingListItems and save to sharedPreferences
-//                shoppingListItems.add(str);
-//                saveShoppingItems();
-//                isListEmpty();
-//            }
-//        });
-//        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                // do sth
-//            }
-//        });
-//
-//        AlertDialog dialog = builder.create();
-//        dialog.show();
-        // using libary
         MaterialDialog builder = new MaterialDialog.Builder(this)
                 .title("Add Item")
                 .widgetColor(getResources().getColor(R.color.ColorPrimaryDark))
@@ -115,15 +90,13 @@ public class MainActivity extends AppCompatActivity {
                 .input("add shopping item", "", new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(MaterialDialog dialog, CharSequence input) {
-                         str[0] = input.toString();
+                        str[0] = input.toString();
                         //add it to shoppingListItems and save to sharedPreferences
                         shoppingListItems.add(str[0]);
                         saveShoppingItems();
                         isListEmpty();
                     }
                 }).negativeText("Cancel").show();
-
-
     }
 
     @Override
