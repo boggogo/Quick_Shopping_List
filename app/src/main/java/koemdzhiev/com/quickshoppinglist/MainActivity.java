@@ -1,19 +1,18 @@
 package koemdzhiev.com.quickshoppinglist;
 
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.gc.materialdesign.views.ButtonFloat;
 
 import java.util.ArrayList;
@@ -82,30 +81,48 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void buildAlertDialog() {
-        final EditText editText = new EditText(this);
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Enter Grocery Item");
-        builder.setTitle("Add Item");
-        builder.setView(editText);
-        builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String str = editText.getText().toString();
-                //add it to shoppingListItems and save to sharedPreferences
-                shoppingListItems.add(str);
-                saveShoppingItems();
-                isListEmpty();
-            }
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // do sth
-            }
-        });
+        final String[] str = {""};
+//        final EditText editText = new EditText(this);
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        builder.setMessage("Enter Grocery Item");
+//        builder.setTitle("Add Item");
+//        builder.setView(editText);
+//        builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                String str = editText.getText().toString();
+//                //add it to shoppingListItems and save to sharedPreferences
+//                shoppingListItems.add(str);
+//                saveShoppingItems();
+//                isListEmpty();
+//            }
+//        });
+//        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                // do sth
+//            }
+//        });
+//
+//        AlertDialog dialog = builder.create();
+//        dialog.show();
+        // using libary
+        MaterialDialog builder = new MaterialDialog.Builder(this)
+                .title("Add Item")
+                .widgetColor(getResources().getColor(R.color.ColorPrimaryDark))
+                .inputMaxLength(30,R.color.material_blue_grey_950)
+                .inputType(InputType.TYPE_CLASS_TEXT)
+                .input("add shopping item", "", new MaterialDialog.InputCallback() {
+                    @Override
+                    public void onInput(MaterialDialog dialog, CharSequence input) {
+                         str[0] = input.toString();
+                        //add it to shoppingListItems and save to sharedPreferences
+                        shoppingListItems.add(str[0]);
+                        saveShoppingItems();
+                        isListEmpty();
+                    }
+                }).negativeText("Cancel").show();
 
-        AlertDialog dialog = builder.create();
-        dialog.show();
 
     }
 
