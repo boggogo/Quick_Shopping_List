@@ -73,7 +73,6 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
                 mItems.remove(getAdapterPosition());
                 saveShoppingItems();
                 notifyItemRemoved(getAdapterPosition());
-
             }
         }
 
@@ -81,7 +80,6 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
         public void onClick(View v) {
 
         }
-        //Method to save items to shared preferences
         private void saveShoppingItems() {
             //save array list
             mEditor.putInt(Constants.ARRAY_LIST_SIZE_KEY, mItems.size());

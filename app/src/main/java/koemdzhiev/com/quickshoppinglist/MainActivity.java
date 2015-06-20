@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
                 //add it to shoppingListItems and save to sharedPreferences
                 shoppingListItems.add(str);
                 saveShoppingItems();
+                isListEmpty();
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

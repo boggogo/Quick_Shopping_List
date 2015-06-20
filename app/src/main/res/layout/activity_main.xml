@@ -32,11 +32,12 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
+        android:elevation="4dp"
         android:layout_marginRight="24dp"
+        android:layout_marginBottom="24dp"
         android:layout_marginEnd="24dp"
         android:background="#1E88E5"
-        materialdesign:rippleSpeed="100"
-        materialdesign:animate="true"
+        materialdesign:animate="false"
         materialdesign:iconDrawable="@drawable/ic_add_white_18dp" />
 
 </RelativeLayout>
