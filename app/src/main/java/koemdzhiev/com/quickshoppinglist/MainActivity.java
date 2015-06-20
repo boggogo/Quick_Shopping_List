@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private int arrayListSizeDefaultValue = 0;
     private ShoppingListAdapter adapter;
     private ActionButton actionButton;
-    private boolean ifBackbuttonPressed = false;
+    //private boolean isScrolled = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +69,20 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(getApplicationContext()));
         mRecyclerView.setAdapter(adapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+            }
+        });
+//        if(isScrolled){
+//            //actionButton.setShowAnimation((Animation) getResources().getAnimation(R.anim.fab_roll_from_down));
+//            actionButton.setShowAnimation(AnimationUtils.loadAnimation(this,R.anim.fab_roll_to_right));
+//        }else {
+//            //actionButton.setShowAnimation((Animation) getResources().getAnimation(R.anim.fab_roll_from_down));
+//            actionButton.show();
+//        }
 
         isListEmpty();
 
