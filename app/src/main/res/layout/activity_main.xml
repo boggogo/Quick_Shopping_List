@@ -25,19 +25,15 @@
               android:layout_centerVertical="true"
               android:layout_centerHorizontal="true"/>
 
-    <com.gc.materialdesign.views.ButtonFloat
+    <com.software.shell.fab.ActionButton
         android:id="@+id/buttonFloat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:elevation="4dp"
-        android:layout_marginRight="24dp"
-        android:layout_marginBottom="24dp"
-        android:layout_marginEnd="24dp"
-        android:background="#1E88E5"
-        materialdesign:animate="false"
-        materialdesign:iconDrawable="@drawable/ic_add_white_18dp" />
+        android:layout_marginRight="@dimen/fab_margin"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_marginBottom="@dimen/fab_margin"/>
 
 </RelativeLayout>

@@ -2,6 +2,7 @@ package koemdzhiev.com.quickshoppinglist;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,9 +12,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.gc.materialdesign.views.ButtonFloat;
+import com.software.shell.fab.ActionButton;
 
 import java.util.ArrayList;
 
@@ -28,7 +30,8 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences.Editor mEditor;
     private TextView mEmptyTextView;
     private int arrayListSizeDefaultValue = 0;
-    private ButtonFloat mFabButton;
+    private ShoppingListAdapter adapter;
+    private ActionButton actionButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,8 +41,13 @@ public class MainActivity extends AppCompatActivity {
         mSharedPreferences = getPreferences(MODE_PRIVATE);
         mEditor = mSharedPreferences.edit();
 
-        mFabButton = (ButtonFloat)findViewById(R.id.buttonFloat);
-        mFabButton.setOnClickListener(new View.OnClickListener() {
+        actionButton = (ActionButton)findViewById(R.id.buttonFloat);
+        actionButton.setButtonColor(getResources().getColor(R.color.ColorPrimary));
+        actionButton.setButtonColorPressed(getResources().getColor(R.color.ColorPrimaryDark));
+        actionButton.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.fab_plus_icon,null));
+        //To enable or disable Shadow Responsive Effect:
+        actionButton.setShadowResponsiveEffectEnabled(true);
+        actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 buildAlertDialog();
@@ -55,13 +63,19 @@ public class MainActivity extends AppCompatActivity {
         //read the array lists
         readShoppingItems();
 
-        ShoppingListAdapter adapter = new ShoppingListAdapter(this,shoppingListItems,mSharedPreferences,mEditor);
+        adapter = new ShoppingListAdapter(this,shoppingListItems,mSharedPreferences,mEditor);
         mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(getApplicationContext()));
         mRecyclerView.setAdapter(adapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         isListEmpty();
 
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        actionButton.playShowAnimation();   // plays the show animation
     }
 
     private void readShoppingItems() {
@@ -78,25 +92,57 @@ public class MainActivity extends AppCompatActivity {
             mEditor.putString(Constants.ARRAY_LIST_ITEM_KEY + i,shoppingListItems.get(i));
         }
         mEditor.apply();
+        adapter.notifyDataSetChanged();
     }
 
     private void buildAlertDialog() {
+        final int[] choosenQuantity = {1};
         final String[] str = {""};
-        MaterialDialog builder = new MaterialDialog.Builder(this)
-                .title("Add Item")
-                .widgetColor(getResources().getColor(R.color.ColorPrimaryDark))
-                .inputMaxLength(30,R.color.material_blue_grey_950)
-                .inputType(InputType.TYPE_CLASS_TEXT)
+        final MaterialDialog.Builder addItemBuilder = new MaterialDialog.Builder(this)
+        .title("Add Item")
+        .widgetColor(getResources().getColor(R.color.ColorPrimaryDark))
+        .inputMaxLength(30, R.color.material_blue_grey_950)
+        .inputType(InputType.TYPE_CLASS_TEXT)
+                .autoDismiss(false)
                 .input("add shopping item", "", new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(MaterialDialog dialog, CharSequence input) {
                         str[0] = input.toString();
                         //add it to shoppingListItems and save to sharedPreferences
-                        shoppingListItems.add(str[0]);
-                        saveShoppingItems();
-                        isListEmpty();
+                        if (str[0].length() != 0) {
+                            shoppingListItems.add(str[0] + " (" + choosenQuantity[0] + ")");
+                            saveShoppingItems();
+                            isListEmpty();
+                            dialog.dismiss();
+                        } else {
+                            Toast.makeText(MainActivity.this, "no item description!", Toast.LENGTH_LONG).show();
+                        }
+
                     }
-                }).negativeText("Cancel").show();
+                }).negativeText("Cancel").callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onNegative(MaterialDialog dialog) {
+                        super.onNegative(dialog);
+                        dialog.dismiss();
+                    }
+                });
+        addItemBuilder.neutralText("Add Quantity").callback(new MaterialDialog.ButtonCallback() {
+            @Override
+            public void onNeutral(final MaterialDialog dialog) {
+                super.onNeutral(dialog);
+
+                MaterialDialog.Builder quantityDialogBuilder = new MaterialDialog.Builder(MainActivity.this);
+                quantityDialogBuilder.title("Add Quantity");
+                quantityDialogBuilder.items(R.array.Quantaty_array);
+                quantityDialogBuilder.itemsCallback(new MaterialDialog.ListCallback() {
+                    @Override
+                    public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                        choosenQuantity[0] = which+1;
+                        Toast.makeText(MainActivity.this, "Quantity: "+choosenQuantity[0], Toast.LENGTH_LONG).show();
+                    }
+                }).show();
+            }
+        }).show();
     }
 
     @Override
