@@ -1,5 +1,6 @@
 package koemdzhiev.com.quickshoppinglist;
 
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.content.res.ResourcesCompat;
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private int arrayListSizeDefaultValue = 0;
     private ShoppingListAdapter adapter;
     private ActionButton actionButton;
+    private boolean ifBackbuttonPressed = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,51 +100,75 @@ public class MainActivity extends AppCompatActivity {
     private void buildAlertDialog() {
         final int[] choosenQuantity = {1};
         final String[] str = {""};
-        final MaterialDialog.Builder addItemBuilder = new MaterialDialog.Builder(this)
-        .title("Add Item")
-        .widgetColor(getResources().getColor(R.color.ColorPrimaryDark))
-        .inputMaxLength(30, R.color.material_blue_grey_950)
-        .inputType(InputType.TYPE_CLASS_TEXT)
-                .autoDismiss(false)
-                .input("add shopping item", "", new MaterialDialog.InputCallback() {
-                    @Override
-                    public void onInput(MaterialDialog dialog, CharSequence input) {
-                        str[0] = input.toString();
-                        //add it to shoppingListItems and save to sharedPreferences
-                        if (str[0].length() != 0) {
-                            shoppingListItems.add(str[0] + " (" + choosenQuantity[0] + ")");
-                            saveShoppingItems();
-                            isListEmpty();
-                            dialog.dismiss();
-                        } else {
-                            Toast.makeText(MainActivity.this, "no item description!", Toast.LENGTH_LONG).show();
-                        }
+        final MaterialDialog.Builder addItemBuilder = new MaterialDialog.Builder(this);
+        addItemBuilder.title("Add Item");
+        addItemBuilder.widgetColor(getResources().getColor(R.color.ColorPrimaryDark));
+        addItemBuilder.inputMaxLength(30, R.color.material_blue_grey_950);
+        addItemBuilder.inputType(InputType.TYPE_CLASS_TEXT);
+        addItemBuilder.autoDismiss(true);
+        addItemBuilder.input("add shopping item", "", new MaterialDialog.InputCallback() {
+            @Override
+            public void onInput(MaterialDialog dialog, CharSequence input) {
+                str[0] = input.toString();
+                //add it to shoppingListItems and save to sharedPreferences
+                if (str[0].length() != 0) {
+                    if (choosenQuantity[0] > 1) {
+                        shoppingListItems.add(str[0] + " (" + choosenQuantity[0] + ")");
+                    } else {
+                        shoppingListItems.add(str[0]);
+                    }
+                    saveShoppingItems();
+                    isListEmpty();
+                    dialog.dismiss();
+                } else {
+                    Toast.makeText(MainActivity.this, "no item description!", Toast.LENGTH_LONG).show();
+                }
 
-                    }
-                }).negativeText("Cancel").callback(new MaterialDialog.ButtonCallback() {
-                    @Override
-                    public void onNegative(MaterialDialog dialog) {
-                        super.onNegative(dialog);
-                        dialog.dismiss();
-                    }
-                });
-        addItemBuilder.neutralText("Add Quantity").callback(new MaterialDialog.ButtonCallback() {
+            }
+        });
+        addItemBuilder.negativeText("Cancel");
+        addItemBuilder.callback(new MaterialDialog.ButtonCallback() {
+            @Override
+            public void onNegative(MaterialDialog dialog) {
+                super.onNegative(dialog);
+                dialog.dismiss();
+            }
+        });
+        addItemBuilder.neutralText("Add Quantity");
+        addItemBuilder.callback(new MaterialDialog.ButtonCallback() {
             @Override
             public void onNeutral(final MaterialDialog dialog) {
                 super.onNeutral(dialog);
-
+                addItemBuilder.autoDismiss(false);
                 MaterialDialog.Builder quantityDialogBuilder = new MaterialDialog.Builder(MainActivity.this);
                 quantityDialogBuilder.title("Add Quantity");
+                quantityDialogBuilder.negativeText("CANCEL").callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onNegative(MaterialDialog dialog) {
+                        super.onNegative(dialog);
+                        addItemBuilder.autoDismiss(true);
+                    }
+                });
                 quantityDialogBuilder.items(R.array.Quantaty_array);
                 quantityDialogBuilder.itemsCallback(new MaterialDialog.ListCallback() {
                     @Override
                     public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-                        choosenQuantity[0] = which+1;
-                        Toast.makeText(MainActivity.this, "Quantity: "+choosenQuantity[0], Toast.LENGTH_LONG).show();
+                        choosenQuantity[0] = which + 1;
+                        Toast.makeText(MainActivity.this, "Quantity: " + choosenQuantity[0], Toast.LENGTH_LONG).show();
+                        addItemBuilder.autoDismiss(true);
                     }
-                }).show();
+                });
+                quantityDialogBuilder.cancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        addItemBuilder.autoDismiss(true);
+                    }
+                });
+                quantityDialogBuilder.show();
             }
-        }).show();
+        });
+
+        addItemBuilder.show();
     }
 
     @Override
