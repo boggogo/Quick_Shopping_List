@@ -164,12 +164,18 @@ public class MainActivity extends AppCompatActivity {
                         choosenQuantity[0] = which + 1;
                         addItemdialog.setContent("Quantity:" + choosenQuantity[0]);
                         addItemBuilder.autoDismiss(true);
+                        //refresh dialog to show keyboard
+                        addItemdialog.dismiss();
+                        addItemdialog.show();
                     }
                 });
                 quantityDialogBuilder.cancelListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialog) {
                         addItemBuilder.autoDismiss(true);
+                        //refresh dialog to show keyboard
+                        addItemdialog.dismiss();
+                        addItemdialog.show();
                     }
                 });
                 quantityDialogBuilder.show();

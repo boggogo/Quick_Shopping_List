@@ -172,12 +172,18 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
                             userQuantityInput[0] = which + 1;
                             addItemdialog.setContent("Quantity:" + userQuantityInput[0]);
                             addItemBuilder.autoDismiss(true);
+                            //refresh dialog to show keyboard
+                            addItemdialog.dismiss();
+                            addItemdialog.show();
                         }
                     });
                     quantityDialogBuilder.cancelListener(new DialogInterface.OnCancelListener() {
                         @Override
                         public void onCancel(DialogInterface dialog) {
                             addItemBuilder.autoDismiss(true);
+                            //refresh dialog to show keyboard
+                            addItemdialog.dismiss();
+                            addItemdialog.show();
                         }
                     });
                     quantityDialogBuilder.show();
