@@ -163,6 +163,9 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
                         public void onNegative(MaterialDialog dialog) {
                             super.onNegative(dialog);
                             addItemBuilder.autoDismiss(true);
+                            //refresh dialog to show keyboard
+                            addItemdialog.dismiss();
+                            addItemdialog.show();
                         }
                     });
                     quantityDialogBuilder.items(R.array.Quantaty_array);
