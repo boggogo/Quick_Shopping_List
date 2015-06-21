@@ -18,7 +18,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import java.util.ArrayList;
 
 import koemdzhiev.com.quickshoppinglist.Constants;
-import koemdzhiev.com.quickshoppinglist.MainActivity;
 import koemdzhiev.com.quickshoppinglist.R;
 
 /**
@@ -94,19 +93,23 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
 
         @Override
         public boolean onLongClick(View v) {
-            MainActivity.ifLongPress = true;
             final int selectedItem = getAdapterPosition();
-            String itemToBeEdited = mSharedPreferences.getString(Constants.ARRAY_LIST_ITEM_KEY + getAdapterPosition(), null);
+            String itemToBeEdited = mSharedPreferences.getString(Constants.ARRAY_LIST_ITEM_KEY + selectedItem, null);
             //check if the selected item has added quantity and if yes -> remove space+(number)
-            String formated ="";
+            String formatted ="";
+            int itemSavedQuantity = 1;
             if(itemToBeEdited.length()-4>0 && (itemToBeEdited.charAt(itemToBeEdited.length()-1)==')')){
-                formated = itemToBeEdited.substring(0,itemToBeEdited.length()-4);
+                //get the save quantity
+                itemSavedQuantity = Integer.parseInt(itemToBeEdited.charAt(itemToBeEdited.length()-2)+"");
+                //format the string by removing the space + (number)
+                formatted = itemToBeEdited.substring(0, itemToBeEdited.length() - 4);
+
             }else{
-                formated = itemToBeEdited;
+                formatted = itemToBeEdited;
             }
 
             final String[] str = {""};
-            final int[] userQuantityInput = {1};
+            final int[] userQuantityInput = {itemSavedQuantity};
             Toast.makeText(mContext, "Long Press", Toast.LENGTH_LONG).show();
             final MaterialDialog.Builder addItemBuilder = new MaterialDialog.Builder(mContext);
             addItemBuilder.title("Edit Item");
@@ -128,7 +131,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
                         mEditor.putString(Constants.ARRAY_LIST_ITEM_KEY + selectedItem, str[0]);
                         mEditor.apply();
                         //clear the content
-                        MainActivity.shoppingListItems.clear();
+                        mItems.clear();
                         //read again content
                         readShoppingItems();
                         notifyDataSetChanged();
@@ -181,7 +184,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
                 }
             });
             addItemdialog = addItemBuilder.build();
-            addItemdialog.getInputEditText().setText(formated);
+            addItemdialog.getInputEditText().setText(formatted);
             addItemdialog.show();
             return true;
         }
@@ -189,7 +192,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
     private void readShoppingItems() {
         int size = mSharedPreferences.getInt(Constants.ARRAY_LIST_SIZE_KEY, 0);
         for(int i = 0;i< size;i++){
-            MainActivity.shoppingListItems.add(mSharedPreferences.getString(Constants.ARRAY_LIST_ITEM_KEY + i, null));
+            mItems.add(mSharedPreferences.getString(Constants.ARRAY_LIST_ITEM_KEY + i, null));
         }
     }
 
