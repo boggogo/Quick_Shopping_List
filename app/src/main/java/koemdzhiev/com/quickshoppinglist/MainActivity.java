@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
         addItemBuilder.input("add shopping item", "", new MaterialDialog.InputCallback() {
             @Override
             public void onInput(MaterialDialog dialog, CharSequence input) {
-                str[0] = input.toString();
+                str[0] = input.toString().trim();
                 //add it to shoppingListItems and save to sharedPreferences
                 if (str[0].length() != 0) {
                     if (choosenQuantity[0] > 1) {

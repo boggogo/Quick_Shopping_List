@@ -118,7 +118,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
             addItemBuilder.input("Edit shopping item", "", new MaterialDialog.InputCallback() {
                 @Override
                 public void onInput(MaterialDialog dialog, CharSequence input) {
-                    str[0] = input.toString();
+                    str[0] = input.toString().trim();
                     //add it to shoppingListItems and save to sharedPreferences
                     if (str[0].length() != 0) {
                         //save items
@@ -127,10 +127,11 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
                         }
                         mEditor.putString(Constants.ARRAY_LIST_ITEM_KEY + selectedItem, str[0]);
                         mEditor.apply();
+                        //clear the content
                         MainActivity.shoppingListItems.clear();
+                        //read again content
                         readShoppingItems();
                         notifyDataSetChanged();
-
                         dialog.dismiss();
                         Toast.makeText(mContext, "Saved", Toast.LENGTH_LONG).show();
                     } else {
