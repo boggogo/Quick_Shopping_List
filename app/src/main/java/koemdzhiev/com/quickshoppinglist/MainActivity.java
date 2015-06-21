@@ -24,9 +24,10 @@ import koemdzhiev.com.quickshoppinglist.adapters.ShoppingListAdapter;
 
 
 public class MainActivity extends AppCompatActivity {
+    public static boolean ifLongPress = false;
     private Toolbar mToolbar;
     private RecyclerView mRecyclerView;
-    private ArrayList<String> shoppingListItems;
+    public static ArrayList<String> shoppingListItems;
     private SharedPreferences mSharedPreferences;
     private SharedPreferences.Editor mEditor;
     private TextView mEmptyTextView;
@@ -184,6 +185,11 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         isListEmpty();
         actionButton.playShowAnimation();
+        if(ifLongPress){
+            shoppingListItems.clear();
+            readShoppingItems();
+            adapter.notifyDataSetChanged();
+        }
     }
 
 

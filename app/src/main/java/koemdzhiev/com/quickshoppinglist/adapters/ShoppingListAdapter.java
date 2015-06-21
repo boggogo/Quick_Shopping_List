@@ -1,18 +1,24 @@
 package koemdzhiev.com.quickshoppinglist.adapters;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
 
 import koemdzhiev.com.quickshoppinglist.Constants;
+import koemdzhiev.com.quickshoppinglist.MainActivity;
 import koemdzhiev.com.quickshoppinglist.R;
 
 /**
@@ -23,6 +29,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
     private Context mContext;
     private SharedPreferences mSharedPreferences;
     private SharedPreferences.Editor mEditor;
+    private MaterialDialog addItemdialog;
 
     public ShoppingListAdapter(Context context, ArrayList<String> items, SharedPreferences preferences,SharedPreferences.Editor editor) {
         mItems = items;
@@ -49,7 +56,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
         return mItems.size();
     }
 
-    public class ShoppingListViewHolder extends RecyclerView.ViewHolder implements CompoundButton.OnCheckedChangeListener, View.OnClickListener{
+    public class ShoppingListViewHolder extends RecyclerView.ViewHolder implements CompoundButton.OnCheckedChangeListener, View.OnLongClickListener{
         public TextView mShoppingListItem;
         public CheckBox mCheckBox;
 
@@ -58,7 +65,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
             mShoppingListItem = (TextView) itemView.findViewById(R.id.shoppingListItem);
             mCheckBox = (CheckBox) itemView.findViewById(R.id.shoppingListCheckBox);
             mCheckBox.setOnCheckedChangeListener(this);
-            itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
         }
 
         public void bindShoppingList(String item){
@@ -76,10 +83,6 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
             }
         }
 
-        @Override
-        public void onClick(View v) {
-
-        }
         private void saveShoppingItems() {
             //save array list
             mEditor.putInt(Constants.ARRAY_LIST_SIZE_KEY, mItems.size());
@@ -87,6 +90,105 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
                 mEditor.putString(Constants.ARRAY_LIST_ITEM_KEY + i,mItems.get(i));
             }
             mEditor.apply();
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            MainActivity.ifLongPress = true;
+            final int selectedItem = getAdapterPosition();
+            String itemToBeEdited = mSharedPreferences.getString(Constants.ARRAY_LIST_ITEM_KEY + getAdapterPosition(), null);
+            //check if the selected item has added quantity and if yes -> remove space+(number)
+            String formated ="";
+            if(itemToBeEdited.length()-4>0 && (itemToBeEdited.charAt(itemToBeEdited.length()-1)==')')){
+                formated = itemToBeEdited.substring(0,itemToBeEdited.length()-4);
+            }else{
+                formated = itemToBeEdited;
+            }
+
+            final String[] str = {""};
+            final int[] userQuantityInput = {1};
+            Toast.makeText(mContext, "Long Press", Toast.LENGTH_LONG).show();
+            final MaterialDialog.Builder addItemBuilder = new MaterialDialog.Builder(mContext);
+            addItemBuilder.title("Edit Item");
+            addItemBuilder.widgetColor(mContext.getResources().getColor(R.color.ColorPrimaryDark));
+            addItemBuilder.inputMaxLength(30, R.color.material_blue_grey_950);
+            addItemBuilder.content("Quantity:" + userQuantityInput[0]);
+            addItemBuilder.inputType(InputType.TYPE_CLASS_TEXT);
+            addItemBuilder.autoDismiss(true);
+            addItemBuilder.input("Edit shopping item", "", new MaterialDialog.InputCallback() {
+                @Override
+                public void onInput(MaterialDialog dialog, CharSequence input) {
+                    str[0] = input.toString();
+                    //add it to shoppingListItems and save to sharedPreferences
+                    if (str[0].length() != 0) {
+                        //save items
+                        if (userQuantityInput[0] > 1) {
+                            str[0] += " (" + userQuantityInput[0] + ")";
+                        }
+                        mEditor.putString(Constants.ARRAY_LIST_ITEM_KEY + selectedItem, str[0]);
+                        mEditor.apply();
+                        MainActivity.shoppingListItems.clear();
+                        readShoppingItems();
+                        notifyDataSetChanged();
+
+                        dialog.dismiss();
+                        Toast.makeText(mContext, "Saved", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(mContext, "no item description!", Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+            addItemBuilder.negativeText("Cancel");
+            addItemBuilder.callback(new MaterialDialog.ButtonCallback() {
+                @Override
+                public void onNegative(MaterialDialog dialog) {
+                    super.onNegative(dialog);
+                    dialog.dismiss();
+                }
+            });
+            addItemBuilder.neutralText("Edit Quantity");
+            addItemBuilder.callback(new MaterialDialog.ButtonCallback() {
+                @Override
+                public void onNeutral(final MaterialDialog dialog) {
+                    super.onNeutral(dialog);
+                    addItemBuilder.autoDismiss(false);
+                    MaterialDialog.Builder quantityDialogBuilder = new MaterialDialog.Builder(mContext);
+                    quantityDialogBuilder.title("Edit Quantity");
+                    quantityDialogBuilder.negativeText("CANCEL").callback(new MaterialDialog.ButtonCallback() {
+                        @Override
+                        public void onNegative(MaterialDialog dialog) {
+                            super.onNegative(dialog);
+                            addItemBuilder.autoDismiss(true);
+                        }
+                    });
+                    quantityDialogBuilder.items(R.array.Quantaty_array);
+                    quantityDialogBuilder.itemsCallback(new MaterialDialog.ListCallback() {
+                        @Override
+                        public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                            userQuantityInput[0] = which + 1;
+                            addItemdialog.setContent("Quantity:" + userQuantityInput[0]);
+                            addItemBuilder.autoDismiss(true);
+                        }
+                    });
+                    quantityDialogBuilder.cancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialog) {
+                            addItemBuilder.autoDismiss(true);
+                        }
+                    });
+                    quantityDialogBuilder.show();
+                }
+            });
+            addItemdialog = addItemBuilder.build();
+            addItemdialog.getInputEditText().setText(formated);
+            addItemdialog.show();
+            return true;
+        }
+    }
+    private void readShoppingItems() {
+        int size = mSharedPreferences.getInt(Constants.ARRAY_LIST_SIZE_KEY, 0);
+        for(int i = 0;i< size;i++){
+            MainActivity.shoppingListItems.add(mSharedPreferences.getString(Constants.ARRAY_LIST_ITEM_KEY + i, null));
         }
     }
 
