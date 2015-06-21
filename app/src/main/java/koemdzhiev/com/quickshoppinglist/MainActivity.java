@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private int arrayListSizeDefaultValue = 0;
     private ShoppingListAdapter adapter;
     private ActionButton actionButton;
+    private MaterialDialog addItemdialog = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,15 +66,17 @@ public class MainActivity extends AppCompatActivity {
         adapter = new ShoppingListAdapter(this,shoppingListItems,mSharedPreferences,mEditor);
         mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(getApplicationContext()));
         mRecyclerView.setAdapter(adapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                actionButton.setHideAnimation(ActionButton.Animations.JUMP_TO_DOWN);
+                actionButton.setHideAnimation(ActionButton.Animations.SCALE_DOWN);
                 actionButton.hide();
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    actionButton.setShowAnimation(ActionButton.Animations.JUMP_FROM_DOWN);
+                    actionButton.setShowAnimation(ActionButton.Animations.SCALE_UP);
                     actionButton.show();
                 }
             }
@@ -108,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
         addItemBuilder.title("Add Item");
         addItemBuilder.widgetColor(getResources().getColor(R.color.ColorPrimaryDark));
         addItemBuilder.inputMaxLength(30, R.color.material_blue_grey_950);
+        addItemBuilder.content("Quantity:" + choosenQuantity[0]);
         addItemBuilder.inputType(InputType.TYPE_CLASS_TEXT);
         addItemBuilder.autoDismiss(true);
         addItemBuilder.input("add shopping item", "", new MaterialDialog.InputCallback() {
@@ -158,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
                         choosenQuantity[0] = which + 1;
-                        Toast.makeText(MainActivity.this, "Quantity: " + choosenQuantity[0], Toast.LENGTH_LONG).show();
+                        addItemdialog.setContent("Quantity:" + choosenQuantity[0]);
                         addItemBuilder.autoDismiss(true);
                     }
                 });
@@ -171,8 +175,8 @@ public class MainActivity extends AppCompatActivity {
                 quantityDialogBuilder.show();
             }
         });
-
-        addItemBuilder.show();
+        addItemdialog = addItemBuilder.build();
+        addItemdialog.show();
     }
 
     @Override
