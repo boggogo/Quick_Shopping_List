@@ -33,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
     private int arrayListSizeDefaultValue = 0;
     private ShoppingListAdapter adapter;
     private ActionButton actionButton;
-    //private boolean isScrolled = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,8 +46,6 @@ public class MainActivity extends AppCompatActivity {
         actionButton.setButtonColor(getResources().getColor(R.color.ColorPrimary));
         actionButton.setButtonColorPressed(getResources().getColor(R.color.ColorPrimaryDark));
         actionButton.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.fab_plus_icon,null));
-        //To enable or disable Shadow Responsive Effect:
-        actionButton.setShadowResponsiveEffectEnabled(true);
         actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,25 +70,18 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-
+                actionButton.setHideAnimation(ActionButton.Animations.JUMP_TO_DOWN);
+                actionButton.hide();
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    actionButton.setShowAnimation(ActionButton.Animations.JUMP_FROM_DOWN);
+                    actionButton.show();
+                }
             }
         });
-//        if(isScrolled){
-//            //actionButton.setShowAnimation((Animation) getResources().getAnimation(R.anim.fab_roll_from_down));
-//            actionButton.setShowAnimation(AnimationUtils.loadAnimation(this,R.anim.fab_roll_to_right));
-//        }else {
-//            //actionButton.setShowAnimation((Animation) getResources().getAnimation(R.anim.fab_roll_from_down));
-//            actionButton.show();
-//        }
 
+        //check weather to show the empty text view
         isListEmpty();
 
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        actionButton.playShowAnimation();   // plays the show animation
     }
 
     private void readShoppingItems() {
@@ -189,6 +179,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         isListEmpty();
+        actionButton.playShowAnimation();
     }
 
 
