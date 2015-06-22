@@ -250,6 +250,23 @@ public class MainActivity extends AppCompatActivity {
             emailIntent.putExtra(Intent.EXTRA_TEXT, allShoppingItems);
             startActivity(Intent.createChooser(emailIntent, "Send email..."));
         }
+        if(id == R.id.action_clearAll){
+            MaterialDialog.Builder builder = new MaterialDialog.Builder(this);
+            builder.title("Clear All");
+            builder.content("Are you sure that you want to remove all shopping items from the list?");
+            builder.positiveText("YES");
+            builder.negativeText("NO");
+            builder.callback(new MaterialDialog.ButtonCallback() {
+                @Override
+                public void onPositive(MaterialDialog dialog) {
+                    super.onPositive(dialog);
+                    shoppingListItems.clear();
+                    saveShoppingItems();
+                }
+            });
+            MaterialDialog dialog = builder.build();
+            dialog.show();
+        }
 
         return super.onOptionsItemSelected(item);
     }
