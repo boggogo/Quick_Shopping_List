@@ -1,7 +1,9 @@
 package koemdzhiev.com.quickshoppinglist;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -232,7 +234,17 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_send) {
+            String allShoppingItems = "";
+            int arrayListSizeDefaultValue = 0;
+            int size = mSharedPreferences.getInt(Constants.ARRAY_LIST_SIZE_KEY, arrayListSizeDefaultValue);
+            for(int i = 0;i<size;i++){
+                allShoppingItems += shoppingListItems.get(i)+"\n";
+            }
+            Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+            sendIntent.setData(Uri.parse("sms:"));
+            sendIntent.putExtra("sms_body","Shopping list:\n\n" + allShoppingItems);
+            startActivity(sendIntent);
             return true;
         }
 
@@ -247,4 +259,5 @@ public class MainActivity extends AppCompatActivity {
             mEmptyTextView.setVisibility(View.INVISIBLE);
         }
     }
+
 }
