@@ -30,7 +30,6 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences mSharedPreferences;
     private SharedPreferences.Editor mEditor;
     private TextView mEmptyTextView;
-    private int arrayListSizeDefaultValue = 0;
     private ShoppingListAdapter adapter;
     private ActionButton actionButton;
     private MaterialDialog addItemdialog = null;
@@ -88,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void readShoppingItems() {
+        int arrayListSizeDefaultValue = 0;
         int size = mSharedPreferences.getInt(Constants.ARRAY_LIST_SIZE_KEY, arrayListSizeDefaultValue);
         for(int i = 0;i< size;i++){
             shoppingListItems.add(mSharedPreferences.getString(Constants.ARRAY_LIST_ITEM_KEY + i,null));
@@ -189,6 +189,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         addItemdialog = addItemBuilder.build();
+        if(addItemdialog.getInputEditText() != null) {
+            addItemdialog.getInputEditText().setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        }
         addItemdialog.show();
     }
 

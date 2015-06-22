@@ -6,4 +6,5 @@
         <item name="colorPrimary">@color/ColorPrimary</item>
         <item name="colorPrimaryDark">@color/ColorPrimaryDark</item>
         <item name="colorAccent">@color/ColorPrimaryDark</item>
+        <item name="md_widget_color">@color/ColorPrimaryDark</item>
     </style></resources>

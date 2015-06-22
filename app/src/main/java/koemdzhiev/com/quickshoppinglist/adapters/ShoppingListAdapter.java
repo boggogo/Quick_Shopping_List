@@ -98,6 +98,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
             //check if the selected item has added quantity and if yes -> remove space+(number)
             String formatted ="";
             int itemSavedQuantity = 1;
+            assert itemToBeEdited != null;
             if(itemToBeEdited.length()-4>0 && (itemToBeEdited.charAt(itemToBeEdited.length()-1)==')')){
                 //get the save quantity
                 itemSavedQuantity = Integer.parseInt(itemToBeEdited.charAt(itemToBeEdited.length()-2)+"");
@@ -110,10 +111,10 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
 
             final String[] str = {""};
             final int[] userQuantityInput = {itemSavedQuantity};
-            Toast.makeText(mContext, "Long Press", Toast.LENGTH_LONG).show();
+//            Toast.makeText(mContext, "Long Press", Toast.LENGTH_LONG).show();
             final MaterialDialog.Builder addItemBuilder = new MaterialDialog.Builder(mContext);
             addItemBuilder.title("Edit Item");
-            addItemBuilder.widgetColor(mContext.getResources().getColor(R.color.ColorPrimaryDark));
+            //addItemBuilder.widgetColor(mContext.getResources().getColor(R.color.ColorPrimaryDark));
             addItemBuilder.titleColor(mContext.getResources().getColor(R.color.ColorPrimaryDark));
             addItemBuilder.inputMaxLength(30, R.color.material_blue_grey_950);
             addItemBuilder.content("Quantity:" + userQuantityInput[0]);
@@ -137,7 +138,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
                         readShoppingItems();
                         notifyDataSetChanged();
                         dialog.dismiss();
-                        Toast.makeText(mContext, "Saved", Toast.LENGTH_LONG).show();
+//                        Toast.makeText(mContext, "Saved", Toast.LENGTH_LONG).show();
                     } else {
                         Toast.makeText(mContext, "no item description!", Toast.LENGTH_LONG).show();
                     }
@@ -194,7 +195,10 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
                 }
             });
             addItemdialog = addItemBuilder.build();
-            addItemdialog.getInputEditText().setText(formatted);
+            if(addItemdialog.getInputEditText() != null) {
+                addItemdialog.getInputEditText().setText(formatted);
+                addItemdialog.getInputEditText().setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+            }
             addItemdialog.show();
             return true;
         }
