@@ -18,5 +18,8 @@
         <item>10</item>
     </string-array>
     <string name="title_activity_share">ShareActivity</string>
-    <string name="action_send">Send via SMS</string>
+    <string name="action_send_sms">Send via SMS</string>
+    <string name="action_about">About</string>
+    <string name="action_donate">Donate</string>
+    <string name="action_send_email">Send via Email</string>
 </resources>

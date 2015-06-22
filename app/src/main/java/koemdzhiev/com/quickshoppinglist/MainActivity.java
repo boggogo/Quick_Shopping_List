@@ -234,21 +234,34 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_send) {
-            String allShoppingItems = "";
-            int arrayListSizeDefaultValue = 0;
-            int size = mSharedPreferences.getInt(Constants.ARRAY_LIST_SIZE_KEY, arrayListSizeDefaultValue);
-            for(int i = 0;i<size;i++){
-                allShoppingItems += shoppingListItems.get(i)+"\n";
-            }
+        if (id == R.id.action_send_sms) {
+            String allShoppingItems = getAllShoppingItemsToSend();
             Intent sendIntent = new Intent(Intent.ACTION_VIEW);
             sendIntent.setData(Uri.parse("sms:"));
             sendIntent.putExtra("sms_body","Shopping list:\n\n" + allShoppingItems);
             startActivity(sendIntent);
             return true;
         }
+        if(id == R.id.action_send_email){
+            String allShoppingItems = getAllShoppingItemsToSend();
+            Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+                    "mailto", "", null));
+            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Shopping list");
+            emailIntent.putExtra(Intent.EXTRA_TEXT, allShoppingItems);
+            startActivity(Intent.createChooser(emailIntent, "Send email..."));
+        }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private String getAllShoppingItemsToSend() {
+        String allShoppingItems = "";
+        int arrayListSizeDefaultValue = 0;
+        int size = mSharedPreferences.getInt(Constants.ARRAY_LIST_SIZE_KEY, arrayListSizeDefaultValue);
+        for(int i = 0;i<size;i++){
+            allShoppingItems += shoppingListItems.get(i)+"\n";
+        }
+        return allShoppingItems;
     }
 
     private void isListEmpty() {
