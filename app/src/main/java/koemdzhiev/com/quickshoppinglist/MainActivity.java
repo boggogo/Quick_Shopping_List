@@ -207,9 +207,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         addItemdialog = addItemBuilder.build();
-        if(addItemdialog.getInputEditText() != null) {
-            addItemdialog.getInputEditText().setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
-        }
         addItemdialog.show();
     }
 

@@ -197,7 +197,6 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
             addItemdialog = addItemBuilder.build();
             if(addItemdialog.getInputEditText() != null) {
                 addItemdialog.getInputEditText().setText(formatted);
-                addItemdialog.getInputEditText().setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
             }
             addItemdialog.show();
             return true;
