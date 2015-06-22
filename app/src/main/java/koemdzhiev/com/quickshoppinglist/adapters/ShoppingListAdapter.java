@@ -114,6 +114,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
             final MaterialDialog.Builder addItemBuilder = new MaterialDialog.Builder(mContext);
             addItemBuilder.title("Edit Item");
             addItemBuilder.widgetColor(mContext.getResources().getColor(R.color.ColorPrimaryDark));
+            addItemBuilder.titleColor(mContext.getResources().getColor(R.color.ColorPrimaryDark));
             addItemBuilder.inputMaxLength(30, R.color.material_blue_grey_950);
             addItemBuilder.content("Quantity:" + userQuantityInput[0]);
             addItemBuilder.inputType(InputType.TYPE_CLASS_TEXT);

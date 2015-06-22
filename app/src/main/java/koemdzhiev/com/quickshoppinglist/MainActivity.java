@@ -109,9 +109,13 @@ public class MainActivity extends AppCompatActivity {
         final String[] str = {""};
         final MaterialDialog.Builder addItemBuilder = new MaterialDialog.Builder(this);
         addItemBuilder.title("Add Item");
-        addItemBuilder.widgetColor(getResources().getColor(R.color.ColorPrimaryDark));
         addItemBuilder.inputMaxLength(30, R.color.material_blue_grey_950);
         addItemBuilder.content("Quantity:" + choosenQuantity[0]);
+        //addItemBuilder.widgetColor(getResources().getColor(R.color.ColorPrimary));
+        addItemBuilder.positiveColor(getResources().getColor(R.color.ColorPrimary));
+        addItemBuilder.negativeColor(getResources().getColor(R.color.ColorPrimary));
+        addItemBuilder.neutralColor(getResources().getColor(R.color.ColorPrimary));
+        addItemBuilder.titleColor(getResources().getColor(R.color.ColorPrimaryDark));
         addItemBuilder.inputType(InputType.TYPE_CLASS_TEXT);
         addItemBuilder.autoDismiss(true);
         addItemBuilder.input("add shopping item", "", new MaterialDialog.InputCallback() {
