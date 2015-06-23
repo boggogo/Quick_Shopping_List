@@ -33,4 +33,7 @@
     <string name="action_donate">Donate</string>
     <string name="action_send_email">Send via Email</string>
     <string name="action_clear_all">Clear All</string>
+    <string name="title_activity_about">AboutActivity</string>
+    <string name="about_contact_me">If you notice a bug or you have a suggestion about the app, please contact me via the email above.</string>
+    <string name="about_my_email">Developer email: koemdjiev@gmail.com</string>
 </resources>

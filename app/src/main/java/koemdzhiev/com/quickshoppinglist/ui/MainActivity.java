@@ -1,4 +1,4 @@
-package koemdzhiev.com.quickshoppinglist;
+package koemdzhiev.com.quickshoppinglist.ui;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,6 +23,9 @@ import com.software.shell.fab.ActionButton;
 
 import java.util.ArrayList;
 
+import koemdzhiev.com.quickshoppinglist.utils.Constants;
+import koemdzhiev.com.quickshoppinglist.R;
+import koemdzhiev.com.quickshoppinglist.utils.SimpleDividerItemDecoration;
 import koemdzhiev.com.quickshoppinglist.adapters.ShoppingListAdapter;
 
 
@@ -266,6 +269,11 @@ public class MainActivity extends AppCompatActivity {
             });
             MaterialDialog dialog = builder.build();
             dialog.show();
+        }
+        if(id == R.id.action_about){
+            //start about activity
+            Intent intent = new Intent(MainActivity.this,AboutActivity.class);
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);

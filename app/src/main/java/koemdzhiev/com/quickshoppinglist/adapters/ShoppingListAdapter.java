@@ -17,7 +17,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
 
-import koemdzhiev.com.quickshoppinglist.Constants;
+import koemdzhiev.com.quickshoppinglist.utils.Constants;
 import koemdzhiev.com.quickshoppinglist.R;
 
 /**

@@ -1,4 +1,4 @@
-package koemdzhiev.com.quickshoppinglist;
+package koemdzhiev.com.quickshoppinglist.utils;
 
 /**
  * Created by koemdzhiev on 19/06/2015.
