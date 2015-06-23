@@ -14,6 +14,10 @@
           android:title="@string/action_send_email"
           android:orderInCategory="300"
           app:showAsAction="never"/>
+    <item android:id="@+id/action_remove_adds"
+          android:title="@string/action_remove_adds"
+          android:orderInCategory="500"
+          app:showAsAction="never"/>
     <item android:id="@+id/action_about"
           android:title="@string/action_about"
           android:orderInCategory="400"

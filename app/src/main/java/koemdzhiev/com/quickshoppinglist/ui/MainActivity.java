@@ -12,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,17 +20,24 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.software.shell.fab.ActionButton;
 
 import java.util.ArrayList;
 
-import koemdzhiev.com.quickshoppinglist.utils.Constants;
 import koemdzhiev.com.quickshoppinglist.R;
-import koemdzhiev.com.quickshoppinglist.utils.SimpleDividerItemDecoration;
 import koemdzhiev.com.quickshoppinglist.adapters.ShoppingListAdapter;
+import koemdzhiev.com.quickshoppinglist.utils.Constants;
+import koemdzhiev.com.quickshoppinglist.utils.IabHelper;
+import koemdzhiev.com.quickshoppinglist.utils.IabResult;
+import koemdzhiev.com.quickshoppinglist.utils.Inventory;
+import koemdzhiev.com.quickshoppinglist.utils.Purchase;
+import koemdzhiev.com.quickshoppinglist.utils.SimpleDividerItemDecoration;
 
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG =  MainActivity.class.getSimpleName();
     private Toolbar mToolbar;
     private RecyclerView mRecyclerView;
     private ArrayList<String> shoppingListItems;
@@ -39,10 +47,34 @@ public class MainActivity extends AppCompatActivity {
     private ShoppingListAdapter adapter;
     private ActionButton actionButton;
     private MaterialDialog addItemdialog = null;
+    private IabHelper mHelper;
+    private String SKU_REMOVE_ADDS = "remove_adds_sku";
+    private boolean mIsRemoveAdds = false;
+    private IabHelper.OnIabPurchaseFinishedListener mPurchasedFinishedListener = new IabHelper.OnIabPurchaseFinishedListener() {
+        @Override
+        public void onIabPurchaseFinished(IabResult result, Purchase purchase) {
+            if (result.isFailure()) {
+                Log.d(TAG, "Error purchasing: " + result);
+                return;
+            }
+            else if (purchase.getSku().equals(SKU_REMOVE_ADDS)) {
+                // consume the gas and update the UI
+                mIsRemoveAdds = true;
+                Toast.makeText(MainActivity.this,"Purchase successful",Toast.LENGTH_LONG).show();
+            }
+        }
+    };
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //load ads
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
         mEmptyTextView = (TextView)findViewById(R.id.list_empty);
         mEmptyTextView.setVisibility(View.INVISIBLE);
         mSharedPreferences = getPreferences(MODE_PRIVATE);
@@ -107,6 +139,55 @@ public class MainActivity extends AppCompatActivity {
         //check weather to show the empty text view
         isListEmpty();
 
+        //set up billing
+        String publicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtQb2DVEXk0rdUSFd/pxgEERrWEtnWbX5fLHNwN3hUcNnI8o6+86qdmEIgw89nG8KIbmN8Uc7JyT1P09e2BWi2pOdqUqSE1rFcUJBUzSudWQgts6YUZ6g7ck/qDUHZznhABmp11OlRXKq9aWmrxKRObv9x6o8+zD8bcI+6J8WYdhDXAQ2RRA+XJX8h+BZ7Aew2cVq9RrvxYIr/rrswlx0CFi0h0mluDaOnc3TMlXmT9BNJOljTwv73Iss3L5GHxcdSVysCg9LfmYS0nCciP1kUVeLHizykrHwJIRa6ejXOdTVLolwJA3M0kt4ZhPxWOkb2NrG9J82DXAte1JchgWUfQIDAQAB";
+
+        mHelper = new IabHelper(this,publicKey);
+        mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
+            @Override
+            public void onIabSetupFinished(IabResult result) {
+                if(!result.isSuccess()){
+                    //error
+                    Log.d(TAG,"Proglem setting up in-app Billing: " + result);
+                }
+
+                //Horay, IAB is fully set up!
+                Log.d(TAG,"Horay, IAB is fully set up!");
+            }
+        });
+        queryPurchasedItems();
+
+
+    }
+
+    private void queryPurchasedItems() {
+        //check if user has bought "remove adds"
+        IabHelper.QueryInventoryFinishedListener mGotInventoryListener = new IabHelper.QueryInventoryFinishedListener() {
+            @Override
+            public void onQueryInventoryFinished(IabResult result, Inventory inventory) {
+                if (result.isFailure()) {
+                    // handle error here
+                }
+                else{
+                    // does the user have the premium upgrade?
+                    mIsRemoveAdds = inventory.hasPurchase(SKU_REMOVE_ADDS);
+                    // update UI accordingly
+                }
+            }
+        };
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isListEmpty();
+        queryPurchasedItems();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mHelper != null) mHelper.dispose();
+        mHelper = null;
     }
 
     private void readShoppingItems() {
@@ -216,13 +297,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        isListEmpty();
-    }
-
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -275,6 +349,9 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this,AboutActivity.class);
             startActivity(intent);
         }
+        if(id == R.id.action_remove_adds){
+            mHelper.launchPurchaseFlow(this,SKU_REMOVE_ADDS,1,mPurchasedFinishedListener,"");
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -297,5 +374,21 @@ public class MainActivity extends AppCompatActivity {
             mEmptyTextView.setVisibility(View.INVISIBLE);
         }
     }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "onActivityResult(" + requestCode + "," + resultCode + "," + data);
 
+        // Pass on the activity result to the helper for handling
+        if (!mHelper.handleActivityResult(requestCode, resultCode, data)) {
+            // not handled, so handle it ourselves (here's where you'd
+            // perform any handling of activity results not related to in-app
+            // billing...
+            //setContentView(R.layout.activity_main_adds);
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+        else {
+            Log.d(TAG, "onActivityResult handled by IABUtil.");
+            //setContentView(R.layout.activity_main_adds);
+        }
+    }
 }

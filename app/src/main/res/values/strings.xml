@@ -36,4 +36,6 @@
     <string name="title_activity_about">AboutActivity</string>
     <string name="about_contact_me">If you notice a bug or you have a suggestion about the app, please contact me via the email above.</string>
     <string name="about_my_email">Developer email: koemdjiev@gmail.com</string>
+    <string name="action_remove_adds">Remove Adds</string>
+    <string name="banner_ad_unit_id">ca-app-pub-1798838525129690/9197011761</string>
 </resources>
