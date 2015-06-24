@@ -92,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
         }else{
             mAdView.setVisibility(View.GONE);
         }
-        mAdView.setVisibility(View.GONE);
         actionButton = (ActionButton)findViewById(R.id.buttonFloat);
         actionButton.setButtonColor(getResources().getColor(R.color.ColorPrimary));
         actionButton.setButtonColorPressed(getResources().getColor(R.color.ColorPrimaryDark));
@@ -160,18 +159,20 @@ public class MainActivity extends AppCompatActivity {
         String publicKey = s1+s2+s3+s4+s5;
 
         mHelper = new IabHelper(this,publicKey);
-        mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
-            @Override
-            public void onIabSetupFinished(IabResult result) {
-                if (!result.isSuccess()) {
-                    //error
-                    Log.d(TAG, "Proglem setting up in-app Billing: " + result);
-                }
+        if(mHelper != null) {
+            mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
+                @Override
+                public void onIabSetupFinished(IabResult result) {
+                    if (!result.isSuccess()) {
+                        //error
+                        Log.d(TAG, "Proglem setting up in-app Billing: " + result);
+                    }
 
-                //Horay, IAB is fully set up!
-                Log.d(TAG, "Horay, IAB is fully set up!");
-            }
-        });
+                    //Horay, IAB is fully set up!
+                    Log.d(TAG, "Horay, IAB is fully set up!");
+                }
+            });
+        }
 
     }
 
