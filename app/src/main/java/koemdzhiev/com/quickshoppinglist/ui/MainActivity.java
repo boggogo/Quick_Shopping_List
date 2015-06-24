@@ -61,8 +61,6 @@ public class MainActivity extends AppCompatActivity {
             else if (purchase.getSku().equals(SKU_REMOVE_ADDS)) {
                 // consume the gas and update the UI
                 mIsRemoveAdds = true;
-                //save it, althugh I am not using it nowhere
-                saveIsRemoveAdds(mIsRemoveAdds);
                 mAdView.setVisibility(View.GONE);
                 Toast.makeText(MainActivity.this,"Purchase successful",Toast.LENGTH_LONG).show();
             }
@@ -79,19 +77,8 @@ public class MainActivity extends AppCompatActivity {
         mSharedPreferences = getPreferences(MODE_PRIVATE);
         mEditor = mSharedPreferences.edit();
 
-//        //save
-//        mEditor.putBoolean(Constants.IS_REMOVE_ADDS,mIsRemoveAdds);
-        //read
-//        mIsRemoveAdds = mSharedPreferences.getBoolean(Constants.IS_REMOVE_ADDS,mIsRemoveAdds);
         queryPurchasedItems();
-        //load ads
-        if(!mIsRemoveAdds) {
-            mAdView = (AdView) findViewById(R.id.adView);
-            AdRequest adRequest = new AdRequest.Builder().build();
-            mAdView.loadAd(adRequest);
-        }else{
-            mAdView.setVisibility(View.GONE);
-        }
+
         actionButton = (ActionButton)findViewById(R.id.buttonFloat);
         actionButton.setButtonColor(getResources().getColor(R.color.ColorPrimary));
         actionButton.setButtonColorPressed(getResources().getColor(R.color.ColorPrimaryDark));
@@ -159,21 +146,17 @@ public class MainActivity extends AppCompatActivity {
         String publicKey = s1+s2+s3+s4+s5;
 
         mHelper = new IabHelper(this,publicKey);
-        if(mHelper != null) {
-            mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
-                @Override
-                public void onIabSetupFinished(IabResult result) {
-                    if (!result.isSuccess()) {
-                        //error
-                        Log.d(TAG, "Proglem setting up in-app Billing: " + result);
-                    }
-
+        mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
+            @Override
+            public void onIabSetupFinished(IabResult result) {
+                if (!result.isSuccess()) {
+                    //error
+                    Log.d(TAG, "Proglem setting up in-app Billing: " + result);
+                }
                     //Horay, IAB is fully set up!
                     Log.d(TAG, "Horay, IAB is fully set up!");
-                }
-            });
-        }
-
+            }
+        });
     }
 
     private void queryPurchasedItems() {
@@ -188,32 +171,33 @@ public class MainActivity extends AppCompatActivity {
                 else{
                     // does the user have the premium upgrade?
                     mIsRemoveAdds = inventory.hasPurchase(SKU_REMOVE_ADDS);
-                    if(!mIsRemoveAdds){
+                    if(!mIsRemoveAdds) {
                         Toast.makeText(MainActivity.this,"no premium",Toast.LENGTH_LONG).show();
+                        mAdView = (AdView) findViewById(R.id.adView);
+                        AdRequest adRequest = new AdRequest.Builder().build();
+                        mAdView.loadAd(adRequest);
+                    }else{
+                        mAdView.setVisibility(View.GONE);
+                        Toast.makeText(MainActivity.this,"premium",Toast.LENGTH_LONG).show();
                     }
-                    // update UI accordingly
-                    saveIsRemoveAdds(mIsRemoveAdds);
-                    Toast.makeText(MainActivity.this,"premium",Toast.LENGTH_LONG).show();
+
                 }
             }
         };
+        mHelper.queryInventoryAsync(mGotInventoryListener);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        queryPurchasedItems();
+        isListEmpty();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
         queryPurchasedItems();
-        //Toast.makeText(MainActivity.this,"On Resume",Toast.LENGTH_LONG).show();
-        //read isRemoveAdds from shared preferences
-        //mIsRemoveAdds = mSharedPreferences.getBoolean(Constants.IS_REMOVE_ADDS,false);
-        if(!mIsRemoveAdds) {
-            mAdView = (AdView) findViewById(R.id.adView);
-            AdRequest adRequest = new AdRequest.Builder().build();
-            mAdView.loadAd(adRequest);
-        }else{
-            mAdView.setVisibility(View.GONE);
-        }
         isListEmpty();
     }
 
@@ -411,12 +395,7 @@ public class MainActivity extends AppCompatActivity {
             mEmptyTextView.setVisibility(View.INVISIBLE);
         }
     }
-//    private boolean isNetworkAvailable() {
-//        ConnectivityManager connectivityManager
-//                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-//        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-//        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-//    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "onActivityResult(" + requestCode + "," + resultCode + "," + data);
