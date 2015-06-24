@@ -18,7 +18,8 @@
         android:clickable="true"
         android:background="?android:selectableItemBackground"
         android:id="@+id/recyclerView"
-        android:layout_below="@+id/tool_bar"/>
+        android:layout_below="@+id/tool_bar"
+        />
 
     <TextView android:id="@+id/list_empty"
               android:layout_width="wrap_content"
@@ -27,23 +28,31 @@
               android:layout_centerVertical="true"
               android:layout_centerHorizontal="true"/>
 
-    <com.software.shell.fab.ActionButton
-        android:id="@+id/buttonFloat"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        fab:show_animation="@anim/fab_roll_from_down"
-        fab:hide_animation="@anim/fab_roll_to_down"
-        android:layout_above="@+id/adView"
-        android:layout_centerHorizontal="true"/>
-
-    <com.google.android.gms.ads.AdView
-        android:id="@+id/adView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
+        android:weightSum="100"
         android:layout_alignParentBottom="true"
-        ads:adSize="BANNER"
-        ads:adUnitId="@string/banner_ad_unit_id">
-    </com.google.android.gms.ads.AdView>
+        android:layout_centerHorizontal="true">
+
+        <com.software.shell.fab.ActionButton
+            android:id="@+id/buttonFloat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="50"
+            android:layout_gravity="center"
+            fab:show_animation="@anim/fab_roll_from_down"
+            fab:hide_animation="@anim/fab_roll_to_down"/>
+
+        <com.google.android.gms.ads.AdView
+            android:id="@+id/adView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="50"
+            ads:adSize="BANNER"
+            ads:adUnitId="@string/banner_ad_unit_id">
+        </com.google.android.gms.ads.AdView>
+    </LinearLayout>
 
 </RelativeLayout>

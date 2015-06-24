@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private ShoppingListAdapter adapter;
     private ActionButton actionButton;
     private MaterialDialog addItemdialog = null;
+    private AdView mAdView;
     private IabHelper mHelper;
     private String SKU_REMOVE_ADDS = "remove_adds_sku";
     private boolean mIsRemoveAdds = false;
@@ -60,26 +61,38 @@ public class MainActivity extends AppCompatActivity {
             else if (purchase.getSku().equals(SKU_REMOVE_ADDS)) {
                 // consume the gas and update the UI
                 mIsRemoveAdds = true;
+                //save it, althugh I am not using it nowhere
+                saveIsRemoveAdds(mIsRemoveAdds);
+                mAdView.setVisibility(View.GONE);
                 Toast.makeText(MainActivity.this,"Purchase successful",Toast.LENGTH_LONG).show();
             }
         }
     };
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //load ads
-        AdView mAdView = (AdView) findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
 
         mEmptyTextView = (TextView)findViewById(R.id.list_empty);
         mEmptyTextView.setVisibility(View.INVISIBLE);
         mSharedPreferences = getPreferences(MODE_PRIVATE);
         mEditor = mSharedPreferences.edit();
 
+//        //save
+//        mEditor.putBoolean(Constants.IS_REMOVE_ADDS,mIsRemoveAdds);
+        //read
+//        mIsRemoveAdds = mSharedPreferences.getBoolean(Constants.IS_REMOVE_ADDS,mIsRemoveAdds);
+        queryPurchasedItems();
+        //load ads
+        if(!mIsRemoveAdds) {
+            mAdView = (AdView) findViewById(R.id.adView);
+            AdRequest adRequest = new AdRequest.Builder().build();
+            mAdView.loadAd(adRequest);
+        }else{
+            mAdView.setVisibility(View.GONE);
+        }
+        mAdView.setVisibility(View.GONE);
         actionButton = (ActionButton)findViewById(R.id.buttonFloat);
         actionButton.setButtonColor(getResources().getColor(R.color.ColorPrimary));
         actionButton.setButtonColorPressed(getResources().getColor(R.color.ColorPrimaryDark));
@@ -99,7 +112,6 @@ public class MainActivity extends AppCompatActivity {
 
         //read the array lists
         readShoppingItems();
-
         adapter = new ShoppingListAdapter(this,shoppingListItems,mSharedPreferences,mEditor);
         mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(getApplicationContext()));
         mRecyclerView.setAdapter(adapter);
@@ -140,23 +152,26 @@ public class MainActivity extends AppCompatActivity {
         isListEmpty();
 
         //set up billing
-        String publicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtQb2DVEXk0rdUSFd/pxgEERrWEtnWbX5fLHNwN3hUcNnI8o6+86qdmEIgw89nG8KIbmN8Uc7JyT1P09e2BWi2pOdqUqSE1rFcUJBUzSudWQgts6YUZ6g7ck/qDUHZznhABmp11OlRXKq9aWmrxKRObv9x6o8+zD8bcI+6J8WYdhDXAQ2RRA+XJX8h+BZ7Aew2cVq9RrvxYIr/rrswlx0CFi0h0mluDaOnc3TMlXmT9BNJOljTwv73Iss3L5GHxcdSVysCg9LfmYS0nCciP1kUVeLHizykrHwJIRa6ejXOdTVLolwJA3M0kt4ZhPxWOkb2NrG9J82DXAte1JchgWUfQIDAQAB";
+        String s1 = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtQb2DVEXk0rdUSFd/pxgEERrWEtnWbX5fLHN";
+        String s2 = "wN3hUcNnI8o6+86qdmEIgw89nG8KIbmN8Uc7JyT1P09e2BWi2pOdqUqSE1rFcUJBUzSudWQgts6YUZ6g";
+        String s3 = "7ck/qDUHZznhABmp11OlRXKq9aWmrxKRObv9x6o8+zD8bcI+6J8WYdhDXAQ2RRA+XJX8h+BZ7Aew2c";
+        String s4 = "Vq9RrvxYIr/rrswlx0CFi0h0mluDaOnc3TMlXmT9BNJOljTwv73Iss3L5GHxcdSVysCg9LfmYS0nCciP1kUVeLHizykrHwJI";
+        String s5 = "Ra6ejXOdTVLolwJA3M0kt4ZhPxWOkb2NrG9J82DXAte1JchgWUfQIDAQAB";
+        String publicKey = s1+s2+s3+s4+s5;
 
         mHelper = new IabHelper(this,publicKey);
         mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
             @Override
             public void onIabSetupFinished(IabResult result) {
-                if(!result.isSuccess()){
+                if (!result.isSuccess()) {
                     //error
-                    Log.d(TAG,"Proglem setting up in-app Billing: " + result);
+                    Log.d(TAG, "Proglem setting up in-app Billing: " + result);
                 }
 
                 //Horay, IAB is fully set up!
-                Log.d(TAG,"Horay, IAB is fully set up!");
+                Log.d(TAG, "Horay, IAB is fully set up!");
             }
         });
-        queryPurchasedItems();
-
 
     }
 
@@ -167,20 +182,38 @@ public class MainActivity extends AppCompatActivity {
             public void onQueryInventoryFinished(IabResult result, Inventory inventory) {
                 if (result.isFailure()) {
                     // handle error here
+                    Toast.makeText(MainActivity.this,"error",Toast.LENGTH_LONG).show();
                 }
                 else{
                     // does the user have the premium upgrade?
                     mIsRemoveAdds = inventory.hasPurchase(SKU_REMOVE_ADDS);
+                    if(!mIsRemoveAdds){
+                        Toast.makeText(MainActivity.this,"no premium",Toast.LENGTH_LONG).show();
+                    }
                     // update UI accordingly
+                    saveIsRemoveAdds(mIsRemoveAdds);
+                    Toast.makeText(MainActivity.this,"premium",Toast.LENGTH_LONG).show();
                 }
             }
         };
     }
+
     @Override
     protected void onResume() {
         super.onResume();
-        isListEmpty();
+
         queryPurchasedItems();
+        //Toast.makeText(MainActivity.this,"On Resume",Toast.LENGTH_LONG).show();
+        //read isRemoveAdds from shared preferences
+        //mIsRemoveAdds = mSharedPreferences.getBoolean(Constants.IS_REMOVE_ADDS,false);
+        if(!mIsRemoveAdds) {
+            mAdView = (AdView) findViewById(R.id.adView);
+            AdRequest adRequest = new AdRequest.Builder().build();
+            mAdView.loadAd(adRequest);
+        }else{
+            mAdView.setVisibility(View.GONE);
+        }
+        isListEmpty();
     }
 
     @Override
@@ -188,6 +221,7 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         if (mHelper != null) mHelper.dispose();
         mHelper = null;
+        mAdView.destroy();
     }
 
     private void readShoppingItems() {
@@ -365,7 +399,9 @@ public class MainActivity extends AppCompatActivity {
         }
         return allShoppingItems;
     }
-
+    private void saveIsRemoveAdds(boolean b) {
+        mEditor.putBoolean(Constants.IS_REMOVE_ADDS,b);
+    }
     private void isListEmpty() {
         if (mRecyclerView.getAdapter().getItemCount() == 0) {
             mEmptyTextView.setVisibility(View.VISIBLE);
@@ -374,6 +410,12 @@ public class MainActivity extends AppCompatActivity {
             mEmptyTextView.setVisibility(View.INVISIBLE);
         }
     }
+//    private boolean isNetworkAvailable() {
+//        ConnectivityManager connectivityManager
+//                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+//        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+//        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+//    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "onActivityResult(" + requestCode + "," + resultCode + "," + data);
