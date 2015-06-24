@@ -185,23 +185,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void queryPurchasedItems() {
+    @Override
+    protected void onResume() {
+        super.onResume();
         //check if user has bought "remove adds"
         if(mHelper.isSetupDone() && !mHelper.isAsyncInProgress()) {
             mHelper.queryInventoryAsync(mGotInventoryListener);
         }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        queryPurchasedItems();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        queryPurchasedItems();
         isListEmpty();
     }
 
@@ -374,6 +364,11 @@ public class MainActivity extends AppCompatActivity {
         }
         if(id == R.id.action_remove_adds){
             mHelper.launchPurchaseFlow(this,SKU_REMOVE_ADDS,1,mPurchasedFinishedListener,"");
+        }
+        if(id == R.id.action_how_to_use){
+            //start about activity
+            Intent intent = new Intent(MainActivity.this,HowToActivity.class);
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
