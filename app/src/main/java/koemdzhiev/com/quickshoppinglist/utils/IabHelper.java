@@ -988,4 +988,12 @@ public class IabHelper {
     void logWarn(String msg) {
         Log.w(mDebugTag, "In-app billing warning: " + msg);
     }
+
+    public boolean isAsyncInProgress(){
+        return mAsyncInProgress;
+    }
+    public boolean isSetupDone (){
+        return mSetupDone;
+    }
+
 }

@@ -51,6 +51,29 @@ public class MainActivity extends AppCompatActivity {
     private IabHelper mHelper;
     private String SKU_REMOVE_ADDS = "remove_adds_sku";
     private boolean mIsRemoveAdds = false;
+    private   IabHelper.QueryInventoryFinishedListener mGotInventoryListener = new IabHelper.QueryInventoryFinishedListener() {
+        @Override
+        public void onQueryInventoryFinished(IabResult result, Inventory inventory) {
+            if (result.isFailure()) {
+                // handle error here
+                Toast.makeText(MainActivity.this,"error",Toast.LENGTH_LONG).show();
+            }
+            else{
+                // does the user have the premium upgrade?
+                mIsRemoveAdds = inventory.hasPurchase(SKU_REMOVE_ADDS);
+                if(!mIsRemoveAdds) {
+                    Toast.makeText(MainActivity.this,"no premium",Toast.LENGTH_LONG).show();
+                    mAdView = (AdView) findViewById(R.id.adView);
+                    AdRequest adRequest = new AdRequest.Builder().build();
+                    mAdView.loadAd(adRequest);
+                }else{
+                    mAdView.setVisibility(View.GONE);
+                    Toast.makeText(MainActivity.this,"premium",Toast.LENGTH_LONG).show();
+                }
+
+            }
+        }
+    };
     private IabHelper.OnIabPurchaseFinishedListener mPurchasedFinishedListener = new IabHelper.OnIabPurchaseFinishedListener() {
         @Override
         public void onIabPurchaseFinished(IabResult result, Purchase purchase) {
@@ -76,8 +99,6 @@ public class MainActivity extends AppCompatActivity {
         mEmptyTextView.setVisibility(View.INVISIBLE);
         mSharedPreferences = getPreferences(MODE_PRIVATE);
         mEditor = mSharedPreferences.edit();
-
-        queryPurchasedItems();
 
         actionButton = (ActionButton)findViewById(R.id.buttonFloat);
         actionButton.setButtonColor(getResources().getColor(R.color.ColorPrimary));
@@ -153,45 +174,28 @@ public class MainActivity extends AppCompatActivity {
                     //error
                     Log.d(TAG, "Proglem setting up in-app Billing: " + result);
                 }
+                if (result.isSuccess()) {
                     //Horay, IAB is fully set up!
                     Log.d(TAG, "Horay, IAB is fully set up!");
+                    //queryPurchasedItems;
+                    mHelper.queryInventoryAsync(mGotInventoryListener);
+                }
             }
         });
+
     }
 
     private void queryPurchasedItems() {
         //check if user has bought "remove adds"
-        IabHelper.QueryInventoryFinishedListener mGotInventoryListener = new IabHelper.QueryInventoryFinishedListener() {
-            @Override
-            public void onQueryInventoryFinished(IabResult result, Inventory inventory) {
-                if (result.isFailure()) {
-                    // handle error here
-                    Toast.makeText(MainActivity.this,"error",Toast.LENGTH_LONG).show();
-                }
-                else{
-                    // does the user have the premium upgrade?
-                    mIsRemoveAdds = inventory.hasPurchase(SKU_REMOVE_ADDS);
-                    if(!mIsRemoveAdds) {
-                        Toast.makeText(MainActivity.this,"no premium",Toast.LENGTH_LONG).show();
-                        mAdView = (AdView) findViewById(R.id.adView);
-                        AdRequest adRequest = new AdRequest.Builder().build();
-                        mAdView.loadAd(adRequest);
-                    }else{
-                        mAdView.setVisibility(View.GONE);
-                        Toast.makeText(MainActivity.this,"premium",Toast.LENGTH_LONG).show();
-                    }
-
-                }
-            }
-        };
-        mHelper.queryInventoryAsync(mGotInventoryListener);
+        if(mHelper.isSetupDone() && !mHelper.isAsyncInProgress()) {
+            mHelper.queryInventoryAsync(mGotInventoryListener);
+        }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         queryPurchasedItems();
-        isListEmpty();
     }
 
     @Override
