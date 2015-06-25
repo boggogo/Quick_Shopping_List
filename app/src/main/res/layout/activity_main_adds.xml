@@ -34,13 +34,6 @@
         android:layout_centerHorizontal="true"
         fab:show_animation="@anim/fab_roll_from_down"
         fab:hide_animation="@anim/fab_roll_to_down"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="ADDS"
-        android:id="@+id/textView3"
-        android:layout_above="@+id/buttonFloat"
-        android:layout_centerHorizontal="true"/>
+/>
 
 </RelativeLayout>

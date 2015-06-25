@@ -62,13 +62,16 @@ public class MainActivity extends AppCompatActivity {
                 // does the user have the premium upgrade?
                 mIsRemoveAdds = inventory.hasPurchase(SKU_REMOVE_ADDS);
                 if(!mIsRemoveAdds) {
-                    Toast.makeText(MainActivity.this,"no premium",Toast.LENGTH_LONG).show();
+                    //Toast.makeText(MainActivity.this,"no premium",Toast.LENGTH_LONG).show();
                     mAdView = (AdView) findViewById(R.id.adView);
                     AdRequest adRequest = new AdRequest.Builder().build();
                     mAdView.loadAd(adRequest);
                 }else{
-                    mAdView.setVisibility(View.GONE);
-                    Toast.makeText(MainActivity.this,"premium",Toast.LENGTH_LONG).show();
+                    if(mAdView != null) {
+                        mAdView.setVisibility(View.GONE);
+                        //actionButton.setLayoutParams(new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 100f))
+                    }
+                    //Toast.makeText(MainActivity.this,"premium",Toast.LENGTH_LONG).show();
                 }
 
             }
@@ -84,7 +87,9 @@ public class MainActivity extends AppCompatActivity {
             else if (purchase.getSku().equals(SKU_REMOVE_ADDS)) {
                 // consume the gas and update the UI
                 mIsRemoveAdds = true;
-                mAdView.setVisibility(View.GONE);
+                if(mAdView != null) {
+                    mAdView.setVisibility(View.GONE);
+                }
                 Toast.makeText(MainActivity.this,"Purchase successful",Toast.LENGTH_LONG).show();
             }
         }
@@ -200,7 +205,9 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         if (mHelper != null) mHelper.dispose();
         mHelper = null;
-        mAdView.destroy();
+        if(mAdView != null){
+            mAdView.destroy();
+        }
     }
 
     private void readShoppingItems() {
