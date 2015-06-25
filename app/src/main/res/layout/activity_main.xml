@@ -46,15 +46,6 @@
             android:layout_gravity="center"
             fab:show_animation="@anim/fab_roll_from_down"
             fab:hide_animation="@anim/fab_roll_to_down"/>
-
-        <!--<com.google.android.gms.ads.AdView-->
-            <!--android:id="@+id/adView"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_weight="50"-->
-            <!--ads:adSize="BANNER"-->
-            <!--ads:adUnitId="@string/banner_ad_unit_id">-->
-        <!--</com.google.android.gms.ads.AdView>-->
     </LinearLayout>
 
 </RelativeLayout>

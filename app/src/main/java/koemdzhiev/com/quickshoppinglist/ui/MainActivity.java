@@ -96,15 +96,19 @@ public class MainActivity extends AppCompatActivity {
         public void onIabPurchaseFinished(IabResult result, Purchase purchase) {
             if (result.isFailure()) {
                 Log.d(TAG, "Error purchasing: " + result);
+                if(result.getResponse() == IabHelper.BILLING_RESPONSE_RESULT_ITEM_ALREADY_OWNED) {
+                    MaterialDialog dialog = buildItemAlreadyPurchasedDialog();
+                    dialog.show();
+                }
                 return;
             }
             else if (purchase.getSku().equals(SKU_REMOVE_ADDS)) {
                 // consume the gas and update the UI
                 mIsRemoveAdds = true;
                 //remove ads
-//                if(mAdView != null) {
-//                    mAdView.setVisibility(View.GONE);
-//                }
+                if(mAdView != null) {
+                    adContainer.removeView(mAdView);
+                }
                 Toast.makeText(MainActivity.this,"Purchase successful",Toast.LENGTH_LONG).show();
             }
         }
@@ -330,7 +334,13 @@ public class MainActivity extends AppCompatActivity {
         addItemdialog = addItemBuilder.build();
         addItemdialog.show();
     }
-
+    private MaterialDialog buildItemAlreadyPurchasedDialog(){
+        MaterialDialog.Builder builder = new MaterialDialog.Builder(MainActivity.this);
+        builder.title("Item already purchased");
+        builder.content("Sorry! \nYou cannot buy this product twice.");
+        builder.positiveText("Oh, ok...");
+        return builder.build();
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -385,7 +395,9 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         }
         if(id == R.id.action_remove_adds){
-            mHelper.launchPurchaseFlow(this,SKU_REMOVE_ADDS,1,mPurchasedFinishedListener,"");
+            if(mHelper.isSetupDone()) {
+                mHelper.launchPurchaseFlow(this, SKU_REMOVE_ADDS, 1, mPurchasedFinishedListener, "");
+            }
         }
         if(id == R.id.action_how_to_use){
             //start about activity

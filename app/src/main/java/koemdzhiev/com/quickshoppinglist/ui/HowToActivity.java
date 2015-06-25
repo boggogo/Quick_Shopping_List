@@ -2,17 +2,23 @@ package koemdzhiev.com.quickshoppinglist.ui;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import koemdzhiev.com.quickshoppinglist.R;
 
 public class HowToActivity extends AppCompatActivity {
+    private TextView mHowToUse;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_how_to);
+
+        mHowToUse = (TextView)findViewById(R.id.textView4);
+        mHowToUse.setMovementMethod(new ScrollingMovementMethod());
     }
 
     @Override
