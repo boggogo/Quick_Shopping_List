@@ -16,11 +16,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.software.shell.fab.ActionButton;
 
@@ -48,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private ActionButton actionButton;
     private MaterialDialog addItemdialog = null;
     private AdView mAdView;
+    private LinearLayout adContainer;
     private IabHelper mHelper;
     private String SKU_REMOVE_ADDS = "remove_adds_sku";
     private boolean mIsRemoveAdds = false;
@@ -62,14 +65,25 @@ public class MainActivity extends AppCompatActivity {
                 // does the user have the premium upgrade?
                 mIsRemoveAdds = inventory.hasPurchase(SKU_REMOVE_ADDS);
                 if(!mIsRemoveAdds) {
-                    //Toast.makeText(MainActivity.this,"no premium",Toast.LENGTH_LONG).show();
-                    mAdView = (AdView) findViewById(R.id.adView);
+                    //play ads
+                    mAdView = new AdView(MainActivity.this);
+                    mAdView.setAdSize(AdSize.BANNER);
+                    mAdView.setAdUnitId(getString(R.string.banner_ad_unit_id));
                     AdRequest adRequest = new AdRequest.Builder().build();
                     mAdView.loadAd(adRequest);
+
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    adContainer = (LinearLayout)findViewById(R.id.myAdContainer);
+                    //check if the adview is already added (count ==2) otherwise added
+                    int i = adContainer.getChildCount();
+                    if(! (i > 1)) {
+                        adContainer.addView(mAdView, params);
+                    }
+                    //Toast.makeText(MainActivity.this,"no premium",Toast.LENGTH_LONG).show();
                 }else{
+                    //remove ads
                     if(mAdView != null) {
-                        mAdView.setVisibility(View.GONE);
-                        //actionButton.setLayoutParams(new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 100f))
+                        adContainer.removeView(mAdView);
                     }
                     //Toast.makeText(MainActivity.this,"premium",Toast.LENGTH_LONG).show();
                 }
@@ -87,9 +101,10 @@ public class MainActivity extends AppCompatActivity {
             else if (purchase.getSku().equals(SKU_REMOVE_ADDS)) {
                 // consume the gas and update the UI
                 mIsRemoveAdds = true;
-                if(mAdView != null) {
-                    mAdView.setVisibility(View.GONE);
-                }
+                //remove ads
+//                if(mAdView != null) {
+//                    mAdView.setVisibility(View.GONE);
+//                }
                 Toast.makeText(MainActivity.this,"Purchase successful",Toast.LENGTH_LONG).show();
             }
         }
