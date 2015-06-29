@@ -6,17 +6,21 @@
           android:title="@string/action_clear_all"
           android:orderInCategory="100"
           app:showAsAction="never"/>
+    <item android:id="@+id/action_sortAlphabetically"
+          android:title="@string/sort_Alphabetically"
+          android:orderInCategory="200"
+          app:showAsAction="never"/>
     <item android:id="@+id/action_send_sms"
           android:title="@string/action_send_sms"
-          android:orderInCategory="200"
+          android:orderInCategory="300"
           app:showAsAction="never"/>
     <item android:id="@+id/action_send_email"
           android:title="@string/action_send_email"
-          android:orderInCategory="300"
+          android:orderInCategory="400"
           app:showAsAction="never"/>
     <item android:id="@+id/action_remove_adds"
           android:title="@string/action_remove_ads"
-          android:orderInCategory="400"
+          android:orderInCategory="500"
           app:showAsAction="never"/>
     <item android:id="@+id/action_about"
           android:title="@string/action_about"
@@ -24,6 +28,6 @@
           app:showAsAction="never"/>
     <item android:id="@+id/action_how_to_use"
           android:title="@string/action_how_to_use"
-          android:orderInCategory="500"
+          android:orderInCategory="700"
           app:showAsAction="never"/>
 </menu>

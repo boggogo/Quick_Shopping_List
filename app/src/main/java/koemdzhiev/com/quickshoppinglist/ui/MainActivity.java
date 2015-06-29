@@ -27,6 +27,7 @@ import com.google.android.gms.ads.AdView;
 import com.software.shell.fab.ActionButton;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import koemdzhiev.com.quickshoppinglist.R;
 import koemdzhiev.com.quickshoppinglist.adapters.ShoppingListAdapter;
@@ -403,6 +404,11 @@ public class MainActivity extends AppCompatActivity {
             //start about activity
             Intent intent = new Intent(MainActivity.this,HowToActivity.class);
             startActivity(intent);
+        }
+        if(id == R.id.action_sortAlphabetically){
+            Collections.sort(shoppingListItems, String.CASE_INSENSITIVE_ORDER);
+            adapter.notifyDataSetChanged();
+            saveShoppingItems();
         }
 
         return super.onOptionsItemSelected(item);
