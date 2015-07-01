@@ -384,7 +384,7 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
                     "koemdzhiev.com.quickshoppinglist");
             RecognitionListener recognitionListener = new RecognitionListener() {
-                private boolean voiceInput_error_flag = false;
+               // private boolean voiceInput_error_flag = false;
                 @Override
                 public void onResults(Bundle results) {
                     ArrayList<String> voiceResults = results
@@ -415,10 +415,10 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onError(int error) {
                     Log.d(TAG, "Error listening for speech: " + error);
-                    if(!voiceInput_error_flag) {
-                        Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_SHORT).show();
-                        voiceInput_error_flag = true;
-                    }
+//                    if(!voiceInput_error_flag) {
+//                        Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_SHORT).show();
+//                        voiceInput_error_flag = true;
+//                    }
 
                     //hide the voice dialog
                     voiceInputDialog.hide();
