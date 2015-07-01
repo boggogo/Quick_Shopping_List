@@ -48,7 +48,9 @@
         • to remove All shopping items from the list go to the drop down menu and select \"Clear All\" from the drop down menu \n
         • to send all of the shopping items via Email go to the drop down menu and select \"Send via Email\" \n
         • to send all of the shopping items via go to the drop down menu and select \" Send via SMS\" \n
-        • sort the list alphabetically by pressing the \"Sort Alphabetically\" option in the drop down menu</string>
+        • sort the list alphabetically by pressing the \"Sort Alphabetically\" option in the drop down menu \n
+        • to activate voice input simply turn the switch at the top of the screen to \"ON\".
+    </string>
     <string name="sort_Alphabetically">Sort Alphabetically</string>
     <string name="app_version">Version: 1.8</string>
     <string name="shopping_list_item_empty_text">No Shopping Items yet</string>

@@ -376,6 +376,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void buildVoiceInputDialog() {
+        //final boolean[] voiceInput_error_flag = {false};
         //check if there is network first
         if(isNetworkConnected()){
             Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
@@ -384,7 +385,6 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
                     "koemdzhiev.com.quickshoppinglist");
             RecognitionListener recognitionListener = new RecognitionListener() {
-               // private boolean voiceInput_error_flag = false;
                 @Override
                 public void onResults(Bundle results) {
                     ArrayList<String> voiceResults = results
@@ -415,11 +415,10 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onError(int error) {
                     Log.d(TAG, "Error listening for speech: " + error);
-//                    if(!voiceInput_error_flag) {
+//                    if(!voiceInput_error_flag[0]) {
 //                        Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_SHORT).show();
-//                        voiceInput_error_flag = true;
 //                    }
-
+//                    voiceInput_error_flag[0] = true;
                     //hide the voice dialog
                     voiceInputDialog.hide();
                 }
