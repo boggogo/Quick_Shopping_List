@@ -1,10 +1,15 @@
 package koemdzhiev.com.quickshoppinglist.ui;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,7 +21,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,11 +57,25 @@ public class MainActivity extends AppCompatActivity {
     private ShoppingListAdapter adapter;
     private ActionButton actionButton;
     private MaterialDialog addItemdialog = null;
+    private MaterialDialog voiceInputDialog = null;
     private AdView mAdView;
     private LinearLayout adContainer;
     private IabHelper mHelper;
     private String SKU_REMOVE_ADDS = "remove_adds_sku";
     private boolean mIsRemoveAdds = false;
+    private boolean mIsVoiceEnabled = false;
+    private SpeechRecognizer recognizer;
+    private View.OnClickListener mOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(mIsVoiceEnabled) {
+                buildVoiceInputDialog();
+            }else{
+                buildAlertDialog();
+            }
+        }
+    };
+
     private   IabHelper.QueryInventoryFinishedListener mGotInventoryListener = new IabHelper.QueryInventoryFinishedListener() {
         @Override
         public void onQueryInventoryFinished(IabResult result, Inventory inventory) {
@@ -124,17 +145,19 @@ public class MainActivity extends AppCompatActivity {
         mEmptyTextView.setVisibility(View.INVISIBLE);
         mSharedPreferences = getPreferences(MODE_PRIVATE);
         mEditor = mSharedPreferences.edit();
-
+        //checks if the speech recognition is available on the device
+        if(SpeechRecognizer.isRecognitionAvailable(this)) {
+            recognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        }else{
+            Toast.makeText(this,"Speech Recognition is not available on this device!",Toast.LENGTH_LONG).show();
+        }
         actionButton = (ActionButton)findViewById(R.id.buttonFloat);
         actionButton.setButtonColor(getResources().getColor(R.color.ColorPrimary));
         actionButton.setButtonColorPressed(getResources().getColor(R.color.ColorPrimaryDark));
-        actionButton.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.fab_plus_icon,null));
-        actionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                buildAlertDialog();
-            }
-        });
+        actionButton.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.fab_plus_icon, null));
+        //read if voice is enabled
+        mIsVoiceEnabled = mSharedPreferences.getBoolean(Constants.IS_VOICE_ENABLED,false);
+        actionButton.setOnClickListener(mOnClickListener);
         mToolbar = (Toolbar)findViewById(R.id.tool_bar);
         setSupportActionBar(mToolbar);
         mRecyclerView = (RecyclerView)findViewById(R.id.recyclerView);
@@ -210,6 +233,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -221,12 +246,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        if(recognizer != null) {
+            recognizer.cancel();
+        }
+        if(voiceInputDialog != null) {
+            voiceInputDialog.hide();
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         if (mHelper != null) mHelper.dispose();
         mHelper = null;
         if(mAdView != null){
             mAdView.destroy();
+        }
+        if(recognizer != null){
+            recognizer.destroy();
         }
     }
 
@@ -335,6 +374,124 @@ public class MainActivity extends AppCompatActivity {
         addItemdialog = addItemBuilder.build();
         addItemdialog.show();
     }
+
+    private void buildVoiceInputDialog() {
+        //check if there is network first
+        if(isNetworkConnected()){
+            Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                    RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+            intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
+                    "koemdzhiev.com.quickshoppinglist");
+            RecognitionListener recognitionListener = new RecognitionListener() {
+                private boolean voiceInput_error_flag = false;
+                @Override
+                public void onResults(Bundle results) {
+                    ArrayList<String> voiceResults = results
+                            .getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+                    if (voiceResults == null) {
+                        Log.e(TAG, "No voice results");
+                    } else {
+                        Log.d(TAG, "Printing matches: ");
+                        for (String match : voiceResults) {
+                            Log.d(TAG, match);
+                        }
+                        String s = voiceResults.get(0);
+                        //Capitalize the first letter
+                        String cap = s.substring(0,1).toUpperCase();
+                        shoppingListItems.add(cap+s.substring(1));
+                        saveShoppingItems();
+                        adapter.notifyDataSetChanged();
+                    }
+                }
+
+                @Override
+                public void onReadyForSpeech(Bundle params) {
+                    Log.d(TAG, "Ready for speech");
+                    voiceInputDialog.show();
+
+                }
+
+                @Override
+                public void onError(int error) {
+                    Log.d(TAG, "Error listening for speech: " + error);
+                    if(!voiceInput_error_flag) {
+                        Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                        voiceInput_error_flag = true;
+                    }
+
+                    //hide the voice dialog
+                    voiceInputDialog.hide();
+                }
+
+                @Override
+                public void onBeginningOfSpeech() {
+                    Log.d(TAG, "Speech starting");
+                }
+
+                @Override
+                public void onBufferReceived(byte[] buffer) {
+                    // TODO Auto-generated method stub
+                    Log.d(TAG, "onBufferReceived");
+
+                }
+
+                @Override
+                public void onEndOfSpeech() {
+                    // TODO Auto-generated method stub
+                    voiceInputDialog.hide();
+                    Log.d(TAG, "onEndOfSpeech");
+
+                }
+
+                @Override
+                public void onEvent(int eventType, Bundle params) {
+                    // TODO Auto-generated method stub
+                    Log.d(TAG, "onEvent");
+
+                }
+
+                @Override
+                public void onPartialResults(Bundle partialResults) {
+                    // TODO Auto-generated method stub
+                    Log.d(TAG, "OnPartialResults");
+                }
+
+                @Override
+                public void onRmsChanged(float rmsdB) {
+                    // TODO Auto-generated method stub
+                    Log.d(TAG, "onRmsChanged");
+
+                }
+            };
+            if(recognizer != null) {
+                recognizer.setRecognitionListener(recognitionListener);
+                recognizer.startListening(intent);
+                voiceInputDialog = new MaterialDialog.Builder(MainActivity.this)
+                        .title("Voice input")
+                        .content("Pronounce the shopping list item")
+                        .progress(true, 0).negativeText("Cancel").callback(new MaterialDialog.ButtonCallback() {
+                            @Override
+                            public void onNegative(MaterialDialog dialog) {
+                                super.onNegative(dialog);
+                                dialog.hide();
+                                recognizer.stopListening();
+                            }
+                        })
+                        .progressIndeterminateStyle(true)
+                        .build();
+            }
+        }else{
+            //build error dialog
+            MaterialDialog.Builder builder = new MaterialDialog.Builder(MainActivity.this)
+                    .title("Ops...")
+                    .content(getString(R.string.error_voice_recognition));
+            builder.positiveText("OK");
+            builder.show();
+        }
+
+    }
+
     private MaterialDialog buildItemAlreadyPurchasedDialog(){
         MaterialDialog.Builder builder = new MaterialDialog.Builder(MainActivity.this);
         builder.title("Item already purchased");
@@ -346,6 +503,33 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        MenuItem item = menu.findItem(R.id.action_switch);
+        if (item != null) {
+            Switch action_bar_switch = (Switch) item.getActionView().findViewById(R.id.action_switch);
+            if (action_bar_switch != null) {
+                int resId = mIsVoiceEnabled ? R.string.enabled : R.string.disabled;
+                action_bar_switch.setText("Voice: "+getResources().getString(resId));
+                action_bar_switch.setChecked(mIsVoiceEnabled);
+                action_bar_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                        mIsVoiceEnabled = !mIsVoiceEnabled;
+                        int resId = mIsVoiceEnabled ? R.string.enabled : R.string.disabled;
+                        buttonView.setText("Voice: " + getResources().getString(resId));
+                        actionButton.setOnClickListener(mOnClickListener);
+
+                        if(isChecked){
+                            mEditor.putBoolean(Constants.IS_VOICE_ENABLED,true);
+                        }else{
+                            mEditor.putBoolean(Constants.IS_VOICE_ENABLED,false);
+                        }
+                        mEditor.apply();
+                        //Toast.makeText(MainActivity.this, "Switch", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }
         return true;
     }
 
@@ -434,7 +618,10 @@ public class MainActivity extends AppCompatActivity {
             mEmptyTextView.setVisibility(View.INVISIBLE);
         }
     }
-
+    private boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        return (cm.getActiveNetworkInfo() != null);
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "onActivityResult(" + requestCode + "," + resultCode + "," + data);
@@ -452,4 +639,6 @@ public class MainActivity extends AppCompatActivity {
             //setContentView(R.layout.activity_main_adds);
         }
     }
+
+
 }
