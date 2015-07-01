@@ -1,19 +1,34 @@
 package koemdzhiev.com.quickshoppinglist.ui;
 
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import koemdzhiev.com.quickshoppinglist.R;
 
 
 public class AboutActivity extends AppCompatActivity {
-
+    private TextView app_version;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
+
+        app_version = (TextView)findViewById(R.id.app_version);
+        PackageInfo pInfo = null;
+        try {
+            pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        if(pInfo != null) {
+            String version = pInfo.versionName;
+            app_version.setText("Version: "+version);
+        }
     }
 
     @Override
