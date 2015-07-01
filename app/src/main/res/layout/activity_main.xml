@@ -25,7 +25,7 @@
     <TextView android:id="@+id/list_empty"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:text="No Shopping Items yet"
+              android:text="@string/shopping_list_item_empty_text"
               android:layout_centerVertical="true"
               android:layout_centerHorizontal="true"/>
 
@@ -41,7 +41,7 @@
         <com.software.shell.fab.ActionButton
             android:id="@+id/buttonFloat"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_weight="50"
             android:layout_gravity="center"
             fab:show_animation="@anim/fab_roll_from_down"
