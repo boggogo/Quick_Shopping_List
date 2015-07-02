@@ -198,6 +198,8 @@ public class MainActivity extends AppCompatActivity {
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 shoppingListItems.remove(viewHolder.getAdapterPosition());
                 saveShoppingItems();
+                isListEmpty();
+                adapter.notifyDataSetChanged();
             }
         };
 
