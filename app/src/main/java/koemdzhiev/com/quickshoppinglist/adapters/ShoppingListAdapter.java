@@ -1,5 +1,6 @@
 package koemdzhiev.com.quickshoppinglist.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -17,8 +18,8 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
 
-import koemdzhiev.com.quickshoppinglist.utils.Constants;
 import koemdzhiev.com.quickshoppinglist.R;
+import koemdzhiev.com.quickshoppinglist.utils.Constants;
 
 /**
  * Created by koemdzhiev on 18/06/2015.
@@ -58,11 +59,17 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
     public class ShoppingListViewHolder extends RecyclerView.ViewHolder implements CompoundButton.OnCheckedChangeListener, View.OnLongClickListener{
         public TextView mShoppingListItem;
         public CheckBox mCheckBox;
+        public TextView mEmptyTextView;
 
         public ShoppingListViewHolder(View itemView) {
             super(itemView);
             mShoppingListItem = (TextView) itemView.findViewById(R.id.shoppingListItem);
             mCheckBox = (CheckBox) itemView.findViewById(R.id.shoppingListCheckBox);
+
+            View rootView = ((Activity)mContext).getWindow().getDecorView().findViewById(android.R.id.content);
+
+            mEmptyTextView = (TextView)rootView.findViewById(R.id.list_empty);
+            mEmptyTextView.setVisibility(View.INVISIBLE);
             mCheckBox.setOnCheckedChangeListener(this);
             itemView.setOnLongClickListener(this);
         }
@@ -77,6 +84,12 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             if(isChecked){
                 mItems.remove(getAdapterPosition());
+                if (getItemCount() == 0) {
+                    mEmptyTextView.setVisibility(View.VISIBLE);
+                }
+                else {
+                    mEmptyTextView.setVisibility(View.INVISIBLE);
+                }
                 saveShoppingItems();
                 notifyItemRemoved(getAdapterPosition());
             }
@@ -202,6 +215,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
             return true;
         }
     }
+
     private void readShoppingItems() {
         int size = mSharedPreferences.getInt(Constants.ARRAY_LIST_SIZE_KEY, 0);
         for(int i = 0;i< size;i++){
