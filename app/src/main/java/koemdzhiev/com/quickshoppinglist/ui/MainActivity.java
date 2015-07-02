@@ -151,8 +151,6 @@ public class MainActivity extends AppCompatActivity {
         //checks if the speech recognition is available on the device
         if(SpeechRecognizer.isRecognitionAvailable(this)) {
             recognizer = SpeechRecognizer.createSpeechRecognizer(this);
-        }else{
-            //Toast.makeText(this,"Speech Recognition is not available on this device!",Toast.LENGTH_LONG).show();
         }
         actionButton = (ActionButton)findViewById(R.id.buttonFloat);
         actionButton.setButtonColor(getResources().getColor(R.color.ColorPrimary));
@@ -470,6 +468,7 @@ public class MainActivity extends AppCompatActivity {
             if(recognizer != null) {
                 recognizer.setRecognitionListener(recognitionListener);
                 recognizer.startListening(intent);
+                mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
                 mStreamVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC); // getting system volume into var for later un-muting
                 mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0); // setting system volume to zero, muting
                 voiceInputDialog = new MaterialDialog.Builder(MainActivity.this)
