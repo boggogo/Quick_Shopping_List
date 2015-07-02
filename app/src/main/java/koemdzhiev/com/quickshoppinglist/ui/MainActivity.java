@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         if(SpeechRecognizer.isRecognitionAvailable(this)) {
             recognizer = SpeechRecognizer.createSpeechRecognizer(this);
         }else{
-            Toast.makeText(this,"Speech Recognition is not available on this device!",Toast.LENGTH_LONG).show();
+            //Toast.makeText(this,"Speech Recognition is not available on this device!",Toast.LENGTH_LONG).show();
         }
         actionButton = (ActionButton)findViewById(R.id.buttonFloat);
         actionButton.setButtonColor(getResources().getColor(R.color.ColorPrimary));
@@ -479,6 +479,9 @@ public class MainActivity extends AppCompatActivity {
                         })
                         .progressIndeterminateStyle(true)
                         .build();
+            }else{
+                //if it is null it must be unavailable on the device
+                Toast.makeText(this,"Speech Recognition is not available on this device!",Toast.LENGTH_LONG).show();
             }
         }else{
             //build error dialog
