@@ -19,6 +19,7 @@ import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -98,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
                     mAdView.loadAd(adRequest);
 
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    params.gravity = Gravity.CENTER;
                     adContainer = (LinearLayout)findViewById(R.id.myAdContainer);
                     //check if the adview is already added (count ==2) otherwise added
                     int i = adContainer.getChildCount();

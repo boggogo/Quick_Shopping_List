@@ -11,16 +11,40 @@
         android:id="@+id/tool_bar"
         layout="@layout/tool_bar">
     </include>
-
-    <android.support.v7.widget.RecyclerView
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:focusable="true"
-        android:clickable="true"
-        android:background="?android:selectableItemBackground"
-        android:id="@+id/recyclerView"
-        android:layout_below="@+id/tool_bar"
-        />
+        android:weightSum="100"
+        android:id="@+id/myAdContainer"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/tool_bar">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="99.9999999">
+
+            <android.support.v7.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:focusable="true"
+                android:clickable="true"
+                android:background="?android:selectableItemBackground"
+                android:id="@+id/recyclerView"/>
+
+            <com.software.shell.fab.ActionButton
+                android:id="@+id/buttonFloat"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                fab:show_animation="@anim/fab_roll_from_down"
+                fab:hide_animation="@anim/fab_roll_to_down"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"/>
+        </RelativeLayout>
+    </LinearLayout>
 
     <TextView android:id="@+id/list_empty"
               android:layout_width="wrap_content"
@@ -28,24 +52,5 @@
               android:text="@string/shopping_list_item_empty_text"
               android:layout_centerVertical="true"
               android:layout_centerHorizontal="true"/>
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:weightSum="100"
-        android:id="@+id/myAdContainer"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true">
-
-        <com.software.shell.fab.ActionButton
-            android:id="@+id/buttonFloat"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="50"
-            android:layout_gravity="center"
-            fab:show_animation="@anim/fab_roll_from_down"
-            fab:hide_animation="@anim/fab_roll_to_down"/>
-    </LinearLayout>
 
 </RelativeLayout>
