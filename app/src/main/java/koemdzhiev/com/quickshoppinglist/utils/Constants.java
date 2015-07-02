@@ -9,5 +9,4 @@ public class Constants {
     public static final String ARRAY_LIST_ITEM_KEY = "array_list";
     public static final String IS_REMOVE_ADDS = "is_remove_adds";
     public static final String IS_VOICE_ENABLED = "is_voice_enabled";
-    public static final String IS_MUTE_SOUNDS = "is_mute_sounds";
 }

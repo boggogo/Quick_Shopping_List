@@ -65,7 +65,8 @@ public class MainActivity extends AppCompatActivity {
     private String SKU_REMOVE_ADDS = "remove_adds_sku";
     private boolean mIsRemoveAdds = false;
     private boolean mIsVoiceEnabled = false;
-    private boolean mIsMuteSounds = false;
+    private AudioManager mAudioManager;
+    private int mStreamVolume = 0;
     private SpeechRecognizer recognizer;
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {
         @Override
@@ -142,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         mEmptyTextView = (TextView)findViewById(R.id.list_empty);
         mEmptyTextView.setVisibility(View.INVISIBLE);
         mSharedPreferences = getPreferences(MODE_PRIVATE);
@@ -159,9 +160,6 @@ public class MainActivity extends AppCompatActivity {
         actionButton.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.fab_plus_icon, null));
         //read if voice is enabled
         mIsVoiceEnabled = mSharedPreferences.getBoolean(Constants.IS_VOICE_ENABLED,false);
-        //read the sound effect state and react accordingly
-        mIsMuteSounds = mSharedPreferences.getBoolean(Constants.IS_MUTE_SOUNDS,false);
-        if(mIsMuteSounds){muteSounds();}else{unMuteSounds();}
         actionButton.setOnClickListener(mOnClickListener);
         mToolbar = (Toolbar)findViewById(R.id.tool_bar);
         setSupportActionBar(mToolbar);
@@ -415,7 +413,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onReadyForSpeech(Bundle params) {
                     Log.d(TAG, "Ready for speech");
                     voiceInputDialog.show();
-
+                    mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mStreamVolume, 0); // again setting the system volume back to the original, un-mutting
                 }
 
                 @Override
@@ -472,6 +470,8 @@ public class MainActivity extends AppCompatActivity {
             if(recognizer != null) {
                 recognizer.setRecognitionListener(recognitionListener);
                 recognizer.startListening(intent);
+                mStreamVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC); // getting system volume into var for later un-muting
+                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0); // setting system volume to zero, muting
                 voiceInputDialog = new MaterialDialog.Builder(MainActivity.this)
                         .title("Voice input")
                         .content("Pronounce the shopping list item")
@@ -511,9 +511,6 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        MenuItem soundEffectsItem = menu.findItem(R.id.action_sounds);
-        soundEffectsItem.setChecked(mIsMuteSounds);
-
         MenuItem item = menu.findItem(R.id.action_switch);
         if (item != null) {
             Switch action_bar_switch = (Switch) item.getActionView().findViewById(R.id.action_switch);
@@ -604,20 +601,6 @@ public class MainActivity extends AppCompatActivity {
             Collections.sort(shoppingListItems, String.CASE_INSENSITIVE_ORDER);
             adapter.notifyDataSetChanged();
             saveShoppingItems();
-        }
-        if(id == R.id.action_sounds){
-            //trigger check
-            if(item.isChecked()){
-                item.setChecked(false);
-                //play sounds
-                unMuteSounds();
-                mEditor.putBoolean(Constants.IS_MUTE_SOUNDS,false).apply();
-            }else{
-                item.setChecked(true);
-                //stop sounds
-                muteSounds();
-                mEditor.putBoolean(Constants.IS_MUTE_SOUNDS,true).apply();
-            }
         }
 
         return super.onOptionsItemSelected(item);

@@ -41,6 +41,7 @@
     <string name="title_activity_how_to">HowToActivity</string>
     <string name="action_how_to_use">How to use</string>
     <string name="how_to_use">
+        • to activate voice input simply turn the switch at the top of the screen to \"ON\".
         • add shopping items by pressing the plus button \n
         • add shopping item quantity by pressing \"Add Quantity\" button when adding a shopping item \n
         • edit an item by long pressing on the desirable item \n
@@ -49,7 +50,6 @@
         • to send all of the shopping items via Email go to the drop down menu and select \"Send via Email\" \n
         • to send all of the shopping items via go to the drop down menu and select \" Send via SMS\" \n
         • sort the list alphabetically by pressing the \"Sort Alphabetically\" option in the drop down menu \n
-        • to activate voice input simply turn the switch at the top of the screen to \"ON\".
     </string>
     <string name="sort_Alphabetically">Sort Alphabetically</string>
     <string name="app_version">Version: 1.8</string>
@@ -58,5 +58,4 @@
     <string name="action_switch">Voice Input</string>
     <string name="enabled">ON</string>
     <string name="disabled">OFF</string>
-    <string name="action_sounds">Mute sounds</string>
 </resources>
