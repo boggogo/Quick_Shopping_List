@@ -18,17 +18,22 @@
           android:title="@string/action_send_email"
           android:orderInCategory="400"
           app:showAsAction="never"/>
+    <item android:id="@+id/action_sounds"
+          android:title="@string/action_sounds"
+          android:checkable="true"
+          android:orderInCategory="500"
+          app:showAsAction="never"/>
     <item android:id="@+id/action_remove_adds"
           android:title="@string/action_remove_ads"
-          android:orderInCategory="500"
+          android:orderInCategory="600"
           app:showAsAction="never"/>
     <item android:id="@+id/action_how_to_use"
           android:title="@string/action_how_to_use"
-          android:orderInCategory="600"
+          android:orderInCategory="700"
           app:showAsAction="never"/>
     <item android:id="@+id/action_about"
           android:title="@string/action_about"
-          android:orderInCategory="700"
+          android:orderInCategory="800"
           app:showAsAction="never"/>
     <item
         android:id="@+id/action_switch"

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -64,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
     private String SKU_REMOVE_ADDS = "remove_adds_sku";
     private boolean mIsRemoveAdds = false;
     private boolean mIsVoiceEnabled = false;
+    private boolean mIsMuteSounds = false;
     private SpeechRecognizer recognizer;
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {
         @Override
@@ -157,6 +159,9 @@ public class MainActivity extends AppCompatActivity {
         actionButton.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.fab_plus_icon, null));
         //read if voice is enabled
         mIsVoiceEnabled = mSharedPreferences.getBoolean(Constants.IS_VOICE_ENABLED,false);
+        //read the sound effect state and react accordingly
+        mIsMuteSounds = mSharedPreferences.getBoolean(Constants.IS_MUTE_SOUNDS,false);
+        if(mIsMuteSounds){muteSounds();}else{unMuteSounds();}
         actionButton.setOnClickListener(mOnClickListener);
         mToolbar = (Toolbar)findViewById(R.id.tool_bar);
         setSupportActionBar(mToolbar);
@@ -400,6 +405,7 @@ public class MainActivity extends AppCompatActivity {
                         //Capitalize the first letter
                         String cap = s.substring(0,1).toUpperCase();
                         shoppingListItems.add(cap+s.substring(1));
+                        isListEmpty();
                         saveShoppingItems();
                         adapter.notifyDataSetChanged();
                     }
@@ -505,6 +511,9 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        MenuItem soundEffectsItem = menu.findItem(R.id.action_sounds);
+        soundEffectsItem.setChecked(mIsMuteSounds);
+
         MenuItem item = menu.findItem(R.id.action_switch);
         if (item != null) {
             Switch action_bar_switch = (Switch) item.getActionView().findViewById(R.id.action_switch);
@@ -596,6 +605,20 @@ public class MainActivity extends AppCompatActivity {
             adapter.notifyDataSetChanged();
             saveShoppingItems();
         }
+        if(id == R.id.action_sounds){
+            //trigger check
+            if(item.isChecked()){
+                item.setChecked(false);
+                //play sounds
+                unMuteSounds();
+                mEditor.putBoolean(Constants.IS_MUTE_SOUNDS,false).apply();
+            }else{
+                item.setChecked(true);
+                //stop sounds
+                muteSounds();
+                mEditor.putBoolean(Constants.IS_MUTE_SOUNDS,true).apply();
+            }
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -623,6 +646,24 @@ public class MainActivity extends AppCompatActivity {
     private boolean isNetworkConnected() {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         return (cm.getActiveNetworkInfo() != null);
+    }
+    private void muteSounds(){
+        //mute audio
+        AudioManager amanager=(AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        amanager.setStreamMute(AudioManager.STREAM_NOTIFICATION, true);
+        amanager.setStreamMute(AudioManager.STREAM_ALARM, true);
+        amanager.setStreamMute(AudioManager.STREAM_MUSIC, true);
+        amanager.setStreamMute(AudioManager.STREAM_RING, true);
+        amanager.setStreamMute(AudioManager.STREAM_SYSTEM, true);
+    }
+    private void unMuteSounds(){
+        //unmute audio
+        AudioManager amanager=(AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        amanager.setStreamMute(AudioManager.STREAM_NOTIFICATION, false);
+        amanager.setStreamMute(AudioManager.STREAM_ALARM, false);
+        amanager.setStreamMute(AudioManager.STREAM_MUSIC, false);
+        amanager.setStreamMute(AudioManager.STREAM_RING, false);
+        amanager.setStreamMute(AudioManager.STREAM_SYSTEM, false);
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
