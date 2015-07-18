@@ -94,11 +94,11 @@ public class ShoppingListsAdapter extends RecyclerView.Adapter<ShoppingListsAdap
                     str[0] = input.toString().trim();
                     //add it to shoppingListItems and save to sharedPreferences
                     if (str[0].length() != 0) {
+                        String old = mShoppingListsItems.get(getAdapterPosition());
                         mShoppingListsItems.set(getAdapterPosition(), str[0]);
-                        copyShoppingItemsFromPrevious(ShoppingListItemAdapter.nameOfList, str[0]);
+                        //Toast.makeText(mContext,mShoppingListsItems.get(getAdapterPosition()) + "old"+old,Toast.LENGTH_LONG).show();
+                        copyShoppingItemsFromPrevious(old, str[0]);
                         saveShoppingLists();
-//                        notifyDataSetChanged();
-//                        isListEmpty();
                     } else {
                         Toast.makeText(mContext, "no list name!", Toast.LENGTH_LONG).show();
                     }
@@ -137,11 +137,11 @@ public class ShoppingListsAdapter extends RecyclerView.Adapter<ShoppingListsAdap
         for(int i = 0;i< size;i++){
             temp.add(mSharedPreferences.getString(Constants.ARRAY_LIST_ITEM_KEY + nameOfListToRead + i,null));
         }
-        //delete from previous location
-        for(int i = 0; i < size; i++) {
-            mEditor.remove(Constants.ARRAY_LIST_ITEM_KEY + nameOfListToRead + i);
-        }
-        //mEditor.commit();
+//        //delete from previous location
+//        for(int i = 0; i < size; i++) {
+//            mEditor.remove(Constants.ARRAY_LIST_ITEM_KEY + nameOfListToRead + i);
+//        }
+//        //mEditor.commit();
 
         //save to the new location
         mEditor.putInt(Constants.ARRAY_LIST_SIZE_KEY+nameOfListToWrite, temp.size());
