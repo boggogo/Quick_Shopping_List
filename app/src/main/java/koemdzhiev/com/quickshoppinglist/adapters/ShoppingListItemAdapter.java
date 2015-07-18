@@ -23,19 +23,22 @@ import koemdzhiev.com.quickshoppinglist.utils.Constants;
 
 /**
  * Created by koemdzhiev on 18/06/2015.
+ * this adapter will adapt the shopping list items
  */
-public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapter.ShoppingListViewHolder> {
+public class ShoppingListItemAdapter extends RecyclerView.Adapter<ShoppingListItemAdapter.ShoppingListViewHolder> {
     private ArrayList<String> mItems;
     private Context mContext;
     private SharedPreferences mSharedPreferences;
     private SharedPreferences.Editor mEditor;
     private MaterialDialog addItemdialog;
+    public static String nameOfList;
 
-    public ShoppingListAdapter(Context context, ArrayList<String> items, SharedPreferences preferences,SharedPreferences.Editor editor) {
+    public ShoppingListItemAdapter(Context context, ArrayList<String> items, SharedPreferences preferences, SharedPreferences.Editor editor,String nameOfList) {
         mItems = items;
         mContext = context;
         mSharedPreferences = preferences;
         mEditor = editor;
+        this.nameOfList = nameOfList;
     }
 
     @Override
@@ -90,24 +93,15 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
                 else {
                     mEmptyTextView.setVisibility(View.INVISIBLE);
                 }
-                saveShoppingItems();
+                saveShoppingItems(ShoppingListItemAdapter.nameOfList);
                 notifyItemRemoved(getAdapterPosition());
             }
-        }
-
-        private void saveShoppingItems() {
-            //save array list
-            mEditor.putInt(Constants.ARRAY_LIST_SIZE_KEY, mItems.size());
-            for (int i =0;i<mItems.size();i++){
-                mEditor.putString(Constants.ARRAY_LIST_ITEM_KEY + i,mItems.get(i));
-            }
-            mEditor.apply();
         }
 
         @Override
         public boolean onLongClick(View v) {
             final int selectedItem = getAdapterPosition();
-            String itemToBeEdited = mSharedPreferences.getString(Constants.ARRAY_LIST_ITEM_KEY + selectedItem, null);
+            String itemToBeEdited = mSharedPreferences.getString(Constants.ARRAY_LIST_ITEM_KEY +ShoppingListItemAdapter.nameOfList + selectedItem, null);
             //check if the selected item has added quantity and if yes -> remove space+(number)
             String formatted ="";
             int itemSavedQuantity = 1;
@@ -143,12 +137,12 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
                         if (userQuantityInput[0] > 1) {
                             str[0] += " (" + userQuantityInput[0] + ")";
                         }
-                        mEditor.putString(Constants.ARRAY_LIST_ITEM_KEY + selectedItem, str[0]);
+                        mEditor.putString(Constants.ARRAY_LIST_ITEM_KEY +ShoppingListItemAdapter.nameOfList+ selectedItem, str[0]);
                         mEditor.apply();
                         //clear the content
                         mItems.clear();
                         //read again content
-                        readShoppingItems();
+                        readShoppingItems(ShoppingListItemAdapter.nameOfList);
                         notifyDataSetChanged();
                         dialog.dismiss();
 //                        Toast.makeText(mContext, "Saved", Toast.LENGTH_LONG).show();
@@ -216,11 +210,22 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
         }
     }
 
-    private void readShoppingItems() {
-        int size = mSharedPreferences.getInt(Constants.ARRAY_LIST_SIZE_KEY, 0);
+    private void readShoppingItems(String nameOfListToRead) {
+        int arrayListSizeDefaultValue = 0;
+        int size = mSharedPreferences.getInt(Constants.ARRAY_LIST_SIZE_KEY+nameOfListToRead, arrayListSizeDefaultValue);
         for(int i = 0;i< size;i++){
-            mItems.add(mSharedPreferences.getString(Constants.ARRAY_LIST_ITEM_KEY + i, null));
+            mItems.add(mSharedPreferences.getString(Constants.ARRAY_LIST_ITEM_KEY + nameOfListToRead + i,null));
         }
+    }
+
+    private void saveShoppingItems(String nameOfListToRead) {
+        //save array list
+        mEditor.putInt(Constants.ARRAY_LIST_SIZE_KEY + nameOfListToRead, mItems.size());
+        for (int i =0;i<mItems.size();i++){
+            mEditor.putString(Constants.ARRAY_LIST_ITEM_KEY + nameOfListToRead + i,mItems.get(i));
+        }
+        mEditor.apply();
+        notifyDataSetChanged();
     }
 
 }

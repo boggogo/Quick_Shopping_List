@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import koemdzhiev.com.quickshoppinglist.R;
-import koemdzhiev.com.quickshoppinglist.adapters.ShoppingListAdapter;
+import koemdzhiev.com.quickshoppinglist.adapters.ShoppingListItemAdapter;
 import koemdzhiev.com.quickshoppinglist.utils.Constants;
 import koemdzhiev.com.quickshoppinglist.utils.IabHelper;
 import koemdzhiev.com.quickshoppinglist.utils.IabResult;
@@ -52,11 +52,12 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG =  MainActivity.class.getSimpleName();
     private Toolbar mToolbar;
     private RecyclerView mRecyclerView;
+    private String name_of_shopping_list;
     private ArrayList<String> shoppingListItems;
     private SharedPreferences mSharedPreferences;
     private SharedPreferences.Editor mEditor;
     private TextView mEmptyTextView;
-    private ShoppingListAdapter adapter;
+    private ShoppingListItemAdapter adapter;
     private ActionButton actionButton;
     private MaterialDialog addItemdialog = null;
     private MaterialDialog voiceInputDialog = null;
@@ -148,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         mEmptyTextView = (TextView)findViewById(R.id.list_empty);
         mEmptyTextView.setVisibility(View.INVISIBLE);
-        mSharedPreferences = getPreferences(MODE_PRIVATE);
+        mSharedPreferences = getSharedPreferences(Constants.APP_NAME_KEY,Context.MODE_PRIVATE);
         mEditor = mSharedPreferences.edit();
         //checks if the speech recognition is available on the device
         if(SpeechRecognizer.isRecognitionAvailable(this)) {
@@ -162,15 +163,20 @@ public class MainActivity extends AppCompatActivity {
         mIsVoiceEnabled = mSharedPreferences.getBoolean(Constants.IS_VOICE_ENABLED,false);
         actionButton.setOnClickListener(mOnClickListener);
         mToolbar = (Toolbar)findViewById(R.id.tool_bar);
+        //get the name of the list to read/save
+        name_of_shopping_list = getIntent().getStringExtra(Constants.NAME_OF_SHOPPING_LIST);
+        mToolbar.setTitle(name_of_shopping_list+ " list");
+        //Toast.makeText(this,name_of_shopping_list,Toast.LENGTH_SHORT).show();
         setSupportActionBar(mToolbar);
+        if(getSupportActionBar() != null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mRecyclerView = (RecyclerView)findViewById(R.id.recyclerView);
         if(shoppingListItems == null){
               shoppingListItems = new ArrayList<>();
         }
-
         //read the array lists
-        readShoppingItems();
-        adapter = new ShoppingListAdapter(this,shoppingListItems,mSharedPreferences,mEditor);
+        readShoppingItems(name_of_shopping_list);
+        adapter = new ShoppingListItemAdapter(this,shoppingListItems,mSharedPreferences,mEditor,name_of_shopping_list);
         mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(getApplicationContext()));
         mRecyclerView.setAdapter(adapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -199,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 shoppingListItems.remove(viewHolder.getAdapterPosition());
-                saveShoppingItems();
+                saveShoppingItems(name_of_shopping_list);
                 isListEmpty();
                 adapter.notifyDataSetChanged();
             }
@@ -274,19 +280,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void readShoppingItems() {
+    private void readShoppingItems(String nameOfListToRead) {
         int arrayListSizeDefaultValue = 0;
-        int size = mSharedPreferences.getInt(Constants.ARRAY_LIST_SIZE_KEY, arrayListSizeDefaultValue);
+        int size = mSharedPreferences.getInt(Constants.ARRAY_LIST_SIZE_KEY+nameOfListToRead, arrayListSizeDefaultValue);
         for(int i = 0;i< size;i++){
-            shoppingListItems.add(mSharedPreferences.getString(Constants.ARRAY_LIST_ITEM_KEY + i,null));
+            shoppingListItems.add(mSharedPreferences.getString(Constants.ARRAY_LIST_ITEM_KEY + nameOfListToRead + i,null));
         }
     }
 
-    private void saveShoppingItems() {
+    private void saveShoppingItems(String nameOfListToRead) {
         //save array list
-        mEditor.putInt(Constants.ARRAY_LIST_SIZE_KEY, shoppingListItems.size());
+        mEditor.putInt(Constants.ARRAY_LIST_SIZE_KEY+nameOfListToRead, shoppingListItems.size());
         for (int i =0;i<shoppingListItems.size();i++){
-            mEditor.putString(Constants.ARRAY_LIST_ITEM_KEY + i,shoppingListItems.get(i));
+            mEditor.putString(Constants.ARRAY_LIST_ITEM_KEY + nameOfListToRead + i,shoppingListItems.get(i));
         }
         mEditor.apply();
         adapter.notifyDataSetChanged();
@@ -317,7 +323,7 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         shoppingListItems.add(str[0]);
                     }
-                    saveShoppingItems();
+                    saveShoppingItems(name_of_shopping_list);
                     isListEmpty();
                     dialog.dismiss();
                 } else {
@@ -406,7 +412,7 @@ public class MainActivity extends AppCompatActivity {
                         String cap = s.substring(0,1).toUpperCase();
                         shoppingListItems.add(cap+s.substring(1));
                         isListEmpty();
-                        saveShoppingItems();
+                        saveShoppingItems(name_of_shopping_list);
                         adapter.notifyDataSetChanged();
                     }
                 }
@@ -579,7 +585,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onPositive(MaterialDialog dialog) {
                     super.onPositive(dialog);
                     shoppingListItems.clear();
-                    saveShoppingItems();
+                    saveShoppingItems(name_of_shopping_list);
                 }
             });
             MaterialDialog dialog = builder.build();
@@ -603,7 +609,7 @@ public class MainActivity extends AppCompatActivity {
         if(id == R.id.action_sortAlphabetically){
             Collections.sort(shoppingListItems, String.CASE_INSENSITIVE_ORDER);
             adapter.notifyDataSetChanged();
-            saveShoppingItems();
+            saveShoppingItems(name_of_shopping_list);
         }
 
         return super.onOptionsItemSelected(item);
@@ -612,15 +618,13 @@ public class MainActivity extends AppCompatActivity {
     private String getAllShoppingItemsToSend() {
         String allShoppingItems = "";
         int arrayListSizeDefaultValue = 0;
-        int size = mSharedPreferences.getInt(Constants.ARRAY_LIST_SIZE_KEY, arrayListSizeDefaultValue);
+        int size = mSharedPreferences.getInt(Constants.ARRAY_LIST_SIZE_KEY + name_of_shopping_list, arrayListSizeDefaultValue);
         for(int i = 0;i<size;i++){
             allShoppingItems += shoppingListItems.get(i)+"\n";
         }
         return allShoppingItems;
     }
-    private void saveIsRemoveAdds(boolean b) {
-        mEditor.putBoolean(Constants.IS_REMOVE_ADDS,b);
-    }
+
     private void isListEmpty() {
         if (mRecyclerView.getAdapter().getItemCount() == 0) {
             mEmptyTextView.setVisibility(View.VISIBLE);
@@ -633,24 +637,7 @@ public class MainActivity extends AppCompatActivity {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         return (cm.getActiveNetworkInfo() != null);
     }
-    private void muteSounds(){
-        //mute audio
-        AudioManager amanager=(AudioManager)getSystemService(Context.AUDIO_SERVICE);
-        amanager.setStreamMute(AudioManager.STREAM_NOTIFICATION, true);
-        amanager.setStreamMute(AudioManager.STREAM_ALARM, true);
-        amanager.setStreamMute(AudioManager.STREAM_MUSIC, true);
-        amanager.setStreamMute(AudioManager.STREAM_RING, true);
-        amanager.setStreamMute(AudioManager.STREAM_SYSTEM, true);
-    }
-    private void unMuteSounds(){
-        //unmute audio
-        AudioManager amanager=(AudioManager)getSystemService(Context.AUDIO_SERVICE);
-        amanager.setStreamMute(AudioManager.STREAM_NOTIFICATION, false);
-        amanager.setStreamMute(AudioManager.STREAM_ALARM, false);
-        amanager.setStreamMute(AudioManager.STREAM_MUSIC, false);
-        amanager.setStreamMute(AudioManager.STREAM_RING, false);
-        amanager.setStreamMute(AudioManager.STREAM_SYSTEM, false);
-    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "onActivityResult(" + requestCode + "," + resultCode + "," + data);

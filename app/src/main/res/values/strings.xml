@@ -58,4 +58,6 @@
     <string name="action_switch">Voice Input</string>
     <string name="enabled">ON</string>
     <string name="disabled">OFF</string>
+    <string name="title_activity_item_lists">ItemListsActivity</string>
+    <string name="shopping_list_empty_text">No Shopping lists yet</string>
 </resources>

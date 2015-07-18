@@ -3,4 +3,6 @@
     <color name="ColorPrimary">#4688F1</color>
     <color name="ColorPrimaryDark">#366AD3</color>
     <color name="dark_gray">#88bfbfbf</color>
+    <color name="ColorPrimaryListActivity">#03A9F4</color>
+    <color name="ColorPrimaryDarkListActivity">#0288D1</color>
 </resources>
