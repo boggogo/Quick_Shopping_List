@@ -94,10 +94,9 @@ public class ShoppingListsAdapter extends RecyclerView.Adapter<ShoppingListsAdap
                     str[0] = input.toString().trim();
                     //add it to shoppingListItems and save to sharedPreferences
                     if (str[0].length() != 0) {
-
                         mShoppingListsItems.set(getAdapterPosition(), str[0]);
-                        saveShoppingLists();
                         copyShoppingItemsFromPrevious(ShoppingListItemAdapter.nameOfList, str[0]);
+                        saveShoppingLists();
 //                        notifyDataSetChanged();
 //                        isListEmpty();
                     } else {
@@ -142,14 +141,14 @@ public class ShoppingListsAdapter extends RecyclerView.Adapter<ShoppingListsAdap
         for(int i = 0; i < size; i++) {
             mEditor.remove(Constants.ARRAY_LIST_ITEM_KEY + nameOfListToRead + i);
         }
-        mEditor.commit();
+        //mEditor.commit();
 
         //save to the new location
         mEditor.putInt(Constants.ARRAY_LIST_SIZE_KEY+nameOfListToWrite, temp.size());
         for (int i =0;i<temp.size();i++){
             mEditor.putString(Constants.ARRAY_LIST_ITEM_KEY + nameOfListToWrite + i,temp.get(i));
         }
-        mEditor.apply();
+        mEditor.commit();
         notifyDataSetChanged();
     }
 

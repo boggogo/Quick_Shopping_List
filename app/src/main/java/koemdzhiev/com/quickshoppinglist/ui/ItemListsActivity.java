@@ -1,5 +1,6 @@
 package koemdzhiev.com.quickshoppinglist.ui;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.content.res.ResourcesCompat;
@@ -115,8 +116,16 @@ public class ItemListsActivity extends AppCompatActivity implements View.OnClick
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if(id == R.id.action_about){
+            //start about activity
+            Intent intent = new Intent(ItemListsActivity.this,AboutActivity.class);
+            startActivity(intent);
+        }
+
+        if(id == R.id.action_how_to_use){
+            //start about activity
+            Intent intent = new Intent(ItemListsActivity.this,HowToActivity.class);
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);

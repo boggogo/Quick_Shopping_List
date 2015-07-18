@@ -26,6 +26,16 @@
         <item>18</item>
         <item>19</item>
         <item>20</item>
+        <item>21</item>
+        <item>22</item>
+        <item>23</item>
+        <item>24</item>
+        <item>25</item>
+        <item>26</item>
+        <item>27</item>
+        <item>28</item>
+        <item>29</item>
+        <item>30</item>
     </string-array>
     <string name="title_activity_share">ShareActivity</string>
     <string name="action_send_sms">Send via SMS</string>
@@ -42,10 +52,11 @@
     <string name="action_how_to_use">How to use</string>
     <string name="how_to_use">
         • to activate voice input simply turn the switch at the top of the screen to \"ON\".
-        • add shopping items by pressing the plus button \n
+        • add shopping items or lists of items by pressing the plus button \n
         • add shopping item quantity by pressing \"Add Quantity\" button when adding a shopping item \n
-        • edit an item by long pressing on the desirable item \n
+        • edit shopping items/lists by long pressing on the desirable item \n
         • remove an item from the list either by checking the checkbox on the right side of the list of items or swiping the item off in either direction: LEFT or RIGHT \n
+        • remove an entire list of shopping items by swiping off in either directionL LEFT or Right \n
         • to remove All shopping items from the list go to the drop down menu and select \"Clear All\" from the drop down menu \n
         • to send all of the shopping items via Email go to the drop down menu and select \"Send via Email\" \n
         • to send all of the shopping items via go to the drop down menu and select \" Send via SMS\" \n
