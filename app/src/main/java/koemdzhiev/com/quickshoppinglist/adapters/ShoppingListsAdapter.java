@@ -137,11 +137,11 @@ public class ShoppingListsAdapter extends RecyclerView.Adapter<ShoppingListsAdap
         for(int i = 0;i< size;i++){
             temp.add(mSharedPreferences.getString(Constants.ARRAY_LIST_ITEM_KEY + nameOfListToRead + i,null));
         }
-//        //delete from previous location
-//        for(int i = 0; i < size; i++) {
-//            mEditor.remove(Constants.ARRAY_LIST_ITEM_KEY + nameOfListToRead + i);
-//        }
-//        //mEditor.commit();
+        //delete from previous location
+        for(int i = 0; i < size; i++) {
+            mEditor.remove(Constants.ARRAY_LIST_ITEM_KEY + nameOfListToRead + i);
+        }
+        //mEditor.commit();
 
         //save to the new location
         mEditor.putInt(Constants.ARRAY_LIST_SIZE_KEY+nameOfListToWrite, temp.size());

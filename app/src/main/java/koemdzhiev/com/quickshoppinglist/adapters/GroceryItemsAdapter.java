@@ -25,7 +25,7 @@ import koemdzhiev.com.quickshoppinglist.utils.Constants;
  * Created by koemdzhiev on 18/06/2015.
  * this adapter will adapt the shopping list items
  */
-public class ShoppingListItemAdapter extends RecyclerView.Adapter<ShoppingListItemAdapter.ShoppingListViewHolder> {
+public class GroceryItemsAdapter extends RecyclerView.Adapter<GroceryItemsAdapter.ShoppingListViewHolder> {
     private ArrayList<String> mItems;
     private Context mContext;
     private SharedPreferences mSharedPreferences;
@@ -33,7 +33,7 @@ public class ShoppingListItemAdapter extends RecyclerView.Adapter<ShoppingListIt
     private MaterialDialog addItemdialog;
     public static String nameOfList;
 
-    public ShoppingListItemAdapter(Context context, ArrayList<String> items, SharedPreferences preferences, SharedPreferences.Editor editor,String nameOfList) {
+    public GroceryItemsAdapter(Context context, ArrayList<String> items, SharedPreferences preferences, SharedPreferences.Editor editor, String nameOfList) {
         mItems = items;
         mContext = context;
         mSharedPreferences = preferences;
@@ -93,7 +93,7 @@ public class ShoppingListItemAdapter extends RecyclerView.Adapter<ShoppingListIt
                 else {
                     mEmptyTextView.setVisibility(View.INVISIBLE);
                 }
-                saveShoppingItems(ShoppingListItemAdapter.nameOfList);
+                saveShoppingItems(GroceryItemsAdapter.nameOfList);
                 notifyItemRemoved(getAdapterPosition());
             }
         }
@@ -101,7 +101,7 @@ public class ShoppingListItemAdapter extends RecyclerView.Adapter<ShoppingListIt
         @Override
         public boolean onLongClick(View v) {
             final int selectedItem = getAdapterPosition();
-            String itemToBeEdited = mSharedPreferences.getString(Constants.ARRAY_LIST_ITEM_KEY +ShoppingListItemAdapter.nameOfList + selectedItem, null);
+            String itemToBeEdited = mSharedPreferences.getString(Constants.ARRAY_LIST_ITEM_KEY + GroceryItemsAdapter.nameOfList + selectedItem, null);
             //check if the selected item has added quantity and if yes -> remove space+(number)
             String formatted ="";
             int itemSavedQuantity = 1;
@@ -137,12 +137,12 @@ public class ShoppingListItemAdapter extends RecyclerView.Adapter<ShoppingListIt
                         if (userQuantityInput[0] > 1) {
                             str[0] += " (" + userQuantityInput[0] + ")";
                         }
-                        mEditor.putString(Constants.ARRAY_LIST_ITEM_KEY +ShoppingListItemAdapter.nameOfList+ selectedItem, str[0]);
+                        mEditor.putString(Constants.ARRAY_LIST_ITEM_KEY + GroceryItemsAdapter.nameOfList+ selectedItem, str[0]);
                         mEditor.apply();
                         //clear the content
                         mItems.clear();
                         //read again content
-                        readShoppingItems(ShoppingListItemAdapter.nameOfList);
+                        readShoppingItems(GroceryItemsAdapter.nameOfList);
                         notifyDataSetChanged();
                         dialog.dismiss();
 //                        Toast.makeText(mContext, "Saved", Toast.LENGTH_LONG).show();

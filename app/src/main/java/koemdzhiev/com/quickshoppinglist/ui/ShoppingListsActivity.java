@@ -25,8 +25,8 @@ import koemdzhiev.com.quickshoppinglist.adapters.ShoppingListsAdapter;
 import koemdzhiev.com.quickshoppinglist.utils.Constants;
 import koemdzhiev.com.quickshoppinglist.utils.SimpleDividerItemDecoration;
 
-public class ItemListsActivity extends AppCompatActivity implements View.OnClickListener {
-    private static final String TAG =  ItemListsActivity.class.getSimpleName();
+public class ShoppingListsActivity extends AppCompatActivity implements View.OnClickListener {
+    private static final String TAG =  ShoppingListsActivity.class.getSimpleName();
     private Toolbar mToolbar;
     private RecyclerView mRecyclerView;
     private ArrayList<String> mShoppingLists;
@@ -61,7 +61,7 @@ public class ItemListsActivity extends AppCompatActivity implements View.OnClick
 //        Toast.makeText(this, ""+mSharedPreferences.getString(Constants.ARRAY_LIST_ITEM_KEY+mShoppingLists.get(0)+0,""), Toast.LENGTH_LONG).show();
 //        mShoppingLists.add("TEST");
 //        mShoppingLists.add("TEST");
-        mAdapter = new ShoppingListsAdapter(ItemListsActivity.this,mShoppingLists,mSharedPreferences,mEditor);
+        mAdapter = new ShoppingListsAdapter(ShoppingListsActivity.this,mShoppingLists,mSharedPreferences,mEditor);
         mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(getApplicationContext()));
         mRecyclerView.setAdapter(mAdapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -118,13 +118,13 @@ public class ItemListsActivity extends AppCompatActivity implements View.OnClick
         //noinspection SimplifiableIfStatement
         if(id == R.id.action_about){
             //start about activity
-            Intent intent = new Intent(ItemListsActivity.this,AboutActivity.class);
+            Intent intent = new Intent(ShoppingListsActivity.this,AboutActivity.class);
             startActivity(intent);
         }
 
         if(id == R.id.action_how_to_use){
             //start about activity
-            Intent intent = new Intent(ItemListsActivity.this,HowToActivity.class);
+            Intent intent = new Intent(ShoppingListsActivity.this,HowToActivity.class);
             startActivity(intent);
         }
 
@@ -151,14 +151,14 @@ public class ItemListsActivity extends AppCompatActivity implements View.OnClick
                             saveShoppingItems();
                             isListEmpty();
                         }else {
-                            MaterialDialog.Builder builder = new MaterialDialog.Builder(ItemListsActivity.this);
+                            MaterialDialog.Builder builder = new MaterialDialog.Builder(ShoppingListsActivity.this);
                             builder.title("Shopping list already exist!");
                             builder.content("Sorry! \nYou cannot have two shopping lists with the same name.");
                             builder.positiveText("Oh, ok...");
                             builder.show();
                         }
                     } else {
-                        Toast.makeText(ItemListsActivity.this, "no list name!", Toast.LENGTH_LONG).show();
+                        Toast.makeText(ShoppingListsActivity.this, "no list name!", Toast.LENGTH_LONG).show();
                     }
                 }
             }).positiveText("SAVE").callback(new MaterialDialog.ButtonCallback() {

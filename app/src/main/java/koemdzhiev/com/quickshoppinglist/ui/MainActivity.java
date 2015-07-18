@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import koemdzhiev.com.quickshoppinglist.R;
-import koemdzhiev.com.quickshoppinglist.adapters.ShoppingListItemAdapter;
+import koemdzhiev.com.quickshoppinglist.adapters.GroceryItemsAdapter;
 import koemdzhiev.com.quickshoppinglist.utils.Constants;
 import koemdzhiev.com.quickshoppinglist.utils.IabHelper;
 import koemdzhiev.com.quickshoppinglist.utils.IabResult;
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences mSharedPreferences;
     private SharedPreferences.Editor mEditor;
     private TextView mEmptyTextView;
-    private ShoppingListItemAdapter adapter;
+    private GroceryItemsAdapter adapter;
     private ActionButton actionButton;
     private MaterialDialog addItemdialog = null;
     private MaterialDialog voiceInputDialog = null;
@@ -176,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
         }
         //read the array lists
         readShoppingItems(name_of_shopping_list);
-        adapter = new ShoppingListItemAdapter(this,shoppingListItems,mSharedPreferences,mEditor,name_of_shopping_list);
+        adapter = new GroceryItemsAdapter(this,shoppingListItems,mSharedPreferences,mEditor,name_of_shopping_list);
         mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(getApplicationContext()));
         mRecyclerView.setAdapter(adapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
