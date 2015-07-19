@@ -73,7 +73,7 @@ public class ShoppingListsAdapter extends RecyclerView.Adapter<ShoppingListsAdap
 //            Toast.makeText(mContext, mShoppingList.getText().toString(), Toast.LENGTH_SHORT).show();
             String nameOfShoppingList = mShoppingList.getText().toString();
             Intent intent = new Intent(mContext, MainActivity.class);
-            intent.putExtra(Constants.NAME_OF_SHOPPING_LIST,nameOfShoppingList);
+            intent.putExtra(Constants.NAME_OF_SHOPPING_LIST, nameOfShoppingList);
             mContext.startActivity(intent);
         }
 
@@ -94,11 +94,20 @@ public class ShoppingListsAdapter extends RecyclerView.Adapter<ShoppingListsAdap
                     str[0] = input.toString().trim();
                     //add it to shoppingListItems and save to sharedPreferences
                     if (str[0].length() != 0) {
-                        String old = mShoppingListsItems.get(getAdapterPosition());
-                        mShoppingListsItems.set(getAdapterPosition(), str[0]);
-                        //Toast.makeText(mContext,mShoppingListsItems.get(getAdapterPosition()) + "old"+old,Toast.LENGTH_LONG).show();
-                        copyShoppingItemsFromPrevious(old, str[0]);
-                        saveShoppingLists();
+                        if(!mShoppingListsItems.contains(str[0])){
+                            String old = mShoppingListsItems.get(getAdapterPosition());
+                            mShoppingListsItems.set(getAdapterPosition(), str[0]);
+                            //Toast.makeText(mContext,mShoppingListsItems.get(getAdapterPosition()) + "old"+old,Toast.LENGTH_LONG).show();
+                            copyShoppingItemsFromPrevious(old, str[0]);
+                            saveShoppingLists();
+                        }else{
+                            //alert item already is existing
+                            MaterialDialog.Builder builder = new MaterialDialog.Builder(mContext);
+                            builder.title("Shopping list already exist!");
+                            builder.content("Sorry! \nYou cannot have two shopping lists with the same name.");
+                            builder.positiveText("Oh, ok...");
+                            builder.show();
+                        }
                     } else {
                         Toast.makeText(mContext, "no list name!", Toast.LENGTH_LONG).show();
                     }

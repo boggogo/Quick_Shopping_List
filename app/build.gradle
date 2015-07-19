@@ -27,4 +27,5 @@ dependencies {
     compile 'com.nineoldandroids:library:2.4.+'
     compile 'com.afollestad:material-dialogs:0.7.6.0'
     compile 'com.github.shell-software:fab:1.1.2'
+    compile 'com.ctrlplusz.anytextview:library:1.2'
 }
