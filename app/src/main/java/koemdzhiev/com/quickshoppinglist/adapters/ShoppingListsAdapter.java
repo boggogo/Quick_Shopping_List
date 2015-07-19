@@ -151,6 +151,8 @@ public class ShoppingListsAdapter extends RecyclerView.Adapter<ShoppingListsAdap
             mEditor.remove(Constants.ARRAY_LIST_ITEM_KEY + nameOfListToRead + i);
         }
         //mEditor.commit();
+        //make nameOfListToRead size 0
+        mEditor.putInt(Constants.ARRAY_LIST_SIZE_KEY+nameOfListToRead,0);
 
         //save to the new location
         mEditor.putInt(Constants.ARRAY_LIST_SIZE_KEY+nameOfListToWrite, temp.size());
