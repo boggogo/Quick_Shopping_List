@@ -306,7 +306,7 @@ public class ShoppingListsActivity extends AppCompatActivity implements View.OnC
         for (int i =0;i<mShoppingLists.size();i++){
             mEditor.putString(Constants.ARRAY_SHOPPING_LIST_KEY + i,mShoppingLists.get(i));
         }
-        mEditor.apply();
+        mEditor.commit();
         mAdapter.notifyDataSetChanged();
     }
     private void readShoppingItems() {
@@ -323,13 +323,13 @@ public class ShoppingListsActivity extends AppCompatActivity implements View.OnC
         int size = mSharedPreferences.getInt(Constants.ARRAY_LIST_SIZE_KEY + nameOfShoppingList, arrayListSizeDefaultValue);
         for(int i = 0;i< size;i++){
             mEditor.remove(Constants.ARRAY_LIST_ITEM_KEY + nameOfShoppingList + i);
-            mEditor.commit();
         }
-        mEditor.putInt(Constants.ARRAY_LIST_SIZE_KEY + nameOfShoppingList, 0);
+        mEditor.remove(Constants.ARRAY_LIST_SIZE_KEY + nameOfShoppingList);
         mEditor.commit();
 //        Toast.makeText(this, mEditor.commit()+"",Toast.LENGTH_LONG).show();
         Toast.makeText(this, "Deleted successfully!",Toast.LENGTH_LONG).show();
     }
+
     private void isListEmpty() {
         if (mRecyclerView.getAdapter().getItemCount() == 0) {
             mEmptyTextView.setVisibility(View.VISIBLE);

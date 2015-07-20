@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i =0;i<shoppingListItems.size();i++){
             mEditor.putString(Constants.ARRAY_LIST_ITEM_KEY + nameOfListToRead + i,shoppingListItems.get(i));
         }
-        mEditor.apply();
+        mEditor.commit();
         adapter.notifyDataSetChanged();
     }
 
