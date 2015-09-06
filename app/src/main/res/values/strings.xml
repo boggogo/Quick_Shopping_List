@@ -51,16 +51,17 @@
     <string name="title_activity_how_to">HowToActivity</string>
     <string name="action_how_to_use">How to use</string>
     <string name="how_to_use">
-        • to activate voice input simply turn the switch at the top of the screen to \"ON\"\n
-        • add shopping items or lists of items by pressing the plus button \n
-        • add shopping item quantity by pressing \"Add Quantity\" button when adding a shopping item \n
-        • edit shopping items/lists by long pressing on the desirable item \n
-        • remove an item from the list either by checking the checkbox on the right side of the list of items or swiping the item off in either direction: LEFT or RIGHT \n
-        • remove an entire list of shopping items by swiping off in either directionL LEFT or Right \n
-        • to remove All shopping items from the list go to the drop down menu and select \"Clear All\" from the drop down menu \n
-        • to send all of the shopping items via Email go to the drop down menu and select \"Send via Email\" \n
-        • to send all of the shopping items via go to the drop down menu and select \" Send via SMS\" \n
-        • sort the list alphabetically by pressing the \"Sort Alphabetically\" option in the drop down menu \n
+        • To activate voice input simply turn the switch at the top of the screen to \"ON\"\n
+        • To create a reminder, simply enter the list that you want to create an reminder for and press "Remind me" \n
+        • Add shopping items or lists of items by pressing the plus button \n
+        • Add shopping item quantity by pressing \"Add Quantity\" button when adding a shopping item \n
+        • Edit shopping items/lists by long pressing on the desirable item \n
+        • Remove an item from the list either by checking the checkbox on the right side of the list of items or swiping the item off in either direction: LEFT or RIGHT \n
+        • Remove an entire list of shopping items by swiping off in either directionL LEFT or Right \n
+        • To remove All shopping items from the list go to the drop down menu and select \"Clear All\" from the drop down menu \n
+        • To send all of the shopping items via Email go to the drop down menu and select \"Send via Email\" \n
+        • To send all of the shopping items via go to the drop down menu and select \" Send via SMS\" \n
+        • Sort the list alphabetically by pressing the \"Sort Alphabetically\" option in the drop down menu \n
     </string>
     <string name="sort_Alphabetically">Sort Alphabetically</string>
     <string name="app_version">Version: 1.8</string>
@@ -71,4 +72,5 @@
     <string name="disabled">OFF</string>
     <string name="title_activity_item_lists">ItemListsActivity</string>
     <string name="shopping_list_empty_text">No Shopping lists yet</string>
+    <string name="action_reminder">Remind me</string>
 </resources>

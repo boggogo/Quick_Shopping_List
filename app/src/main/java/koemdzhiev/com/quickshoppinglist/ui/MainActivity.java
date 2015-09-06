@@ -8,6 +8,7 @@ import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
@@ -478,6 +479,20 @@ public class MainActivity extends AppCompatActivity {
             });
             MaterialDialog dialog = builder.build();
             dialog.show();
+        }
+        if(id == R.id.action_remind_me){
+            String itemsToBeSend = getAllShoppingItemsToSend();
+
+            if(itemsToBeSend.equals("")){
+                Toast.makeText(MainActivity.this,"no shopping items!",Toast.LENGTH_LONG).show();
+            }else {
+                Intent intent = new Intent(Intent.ACTION_INSERT)
+                        .setData(CalendarContract.Events.CONTENT_URI)
+                        .putExtra(CalendarContract.Events.TITLE, "Buy Groceries")
+                        .putExtra(CalendarContract.Events.DESCRIPTION, "Buy these groceries:\n" + itemsToBeSend)
+                        .putExtra(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_FREE);
+                startActivity(intent);
+            }
         }
         if(id == R.id.action_about){
             //start about activity

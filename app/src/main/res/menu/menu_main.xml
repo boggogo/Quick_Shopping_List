@@ -18,13 +18,17 @@
           android:title="@string/action_send_email"
           android:orderInCategory="400"
           app:showAsAction="never"/>
+    <item android:id="@+id/action_remind_me"
+          android:title="@string/action_reminder"
+          android:orderInCategory="700"
+          app:showAsAction="never"/>
     <item android:id="@+id/action_how_to_use"
           android:title="@string/action_how_to_use"
-          android:orderInCategory="600"
+          android:orderInCategory="800"
           app:showAsAction="never"/>
     <item android:id="@+id/action_about"
           android:title="@string/action_about"
-          android:orderInCategory="700"
+          android:orderInCategory="900"
           app:showAsAction="never"/>
     <item
         android:id="@+id/action_switch"
