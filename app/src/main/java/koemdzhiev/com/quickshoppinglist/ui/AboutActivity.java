@@ -1,11 +1,14 @@
 package koemdzhiev.com.quickshoppinglist.ui;
 
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import koemdzhiev.com.quickshoppinglist.R;
@@ -13,6 +16,8 @@ import koemdzhiev.com.quickshoppinglist.R;
 
 public class AboutActivity extends AppCompatActivity {
     private TextView app_version;
+    private TextView dev_email;
+    private String version;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,9 +31,20 @@ public class AboutActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         if(pInfo != null) {
-            String version = pInfo.versionName;
+            version = pInfo.versionName;
             app_version.setText("Version: "+version);
         }
+
+        dev_email = (TextView)findViewById(R.id.emailTextView);
+        dev_email.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:koemdjiev@gmail.com"));
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name) + ", version: " + version);
+
+                startActivity(Intent.createChooser(emailIntent, "Chooser Title"));
+            }
+        });
     }
 
     @Override
