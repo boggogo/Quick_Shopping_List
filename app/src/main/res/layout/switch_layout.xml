@@ -2,7 +2,8 @@
 <Switch xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/action_switch"
         android:text="@string/action_switch"
-        android:switchPadding="10dp"
+        android:textSize="10sp"
+        android:switchPadding="2dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
     />

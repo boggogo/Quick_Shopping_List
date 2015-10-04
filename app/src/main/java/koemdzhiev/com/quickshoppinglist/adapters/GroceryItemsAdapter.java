@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -122,8 +123,8 @@ public class GroceryItemsAdapter extends RecyclerView.Adapter<GroceryItemsAdapte
             final MaterialDialog.Builder addItemBuilder = new MaterialDialog.Builder(mContext);
             addItemBuilder.title("Edit Item");
             //addItemBuilder.widgetColor(mContext.getResources().getColor(R.color.ColorPrimaryDark));
-            addItemBuilder.titleColor(mContext.getResources().getColor(R.color.ColorPrimaryDark));
-            addItemBuilder.inputMaxLength(30, R.color.material_blue_grey_950);
+            addItemBuilder.titleColor(ContextCompat.getColor(mContext,R.color.ColorPrimaryDark));
+            addItemBuilder.inputMaxLength(30, ContextCompat.getColor(mContext,R.color.fab_material_red_900));
             addItemBuilder.content("Quantity:" + userQuantityInput[0]);
             addItemBuilder.inputType(InputType.TYPE_CLASS_TEXT);
             addItemBuilder.autoDismiss(true);

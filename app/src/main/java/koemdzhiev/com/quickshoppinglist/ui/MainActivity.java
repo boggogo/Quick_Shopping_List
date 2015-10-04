@@ -12,6 +12,7 @@ import android.provider.CalendarContract;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -85,8 +86,8 @@ public class MainActivity extends AppCompatActivity {
             recognizer = SpeechRecognizer.createSpeechRecognizer(this);
         }
         actionButton = (ActionButton)findViewById(R.id.buttonFloat);
-        actionButton.setButtonColor(getResources().getColor(R.color.ColorPrimary));
-        actionButton.setButtonColorPressed(getResources().getColor(R.color.ColorPrimaryDark));
+        actionButton.setButtonColor(ContextCompat.getColor(this,R.color.ColorPrimary));
+        actionButton.setButtonColorPressed(ContextCompat.getColor(this,R.color.ColorPrimaryDark));
         actionButton.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.fab_plus_icon, null));
         //read if voice is enabled
         mIsVoiceEnabled = mSharedPreferences.getBoolean(Constants.IS_VOICE_ENABLED,false);
@@ -199,13 +200,13 @@ public class MainActivity extends AppCompatActivity {
         final String[] str = {""};
         final MaterialDialog.Builder addItemBuilder = new MaterialDialog.Builder(this);
         addItemBuilder.title("Add Item");
-        addItemBuilder.inputMaxLength(30, R.color.material_blue_grey_950);
+        addItemBuilder.inputMaxLength(30, ContextCompat.getColor(this,R.color.fab_material_red_900));
         addItemBuilder.content("Quantity:" + choosenQuantity[0]);
         //addItemBuilder.widgetColor(getResources().getColor(R.color.ColorPrimary));
-        addItemBuilder.positiveColor(getResources().getColor(R.color.ColorPrimary));
-        addItemBuilder.negativeColor(getResources().getColor(R.color.ColorPrimary));
-        addItemBuilder.neutralColor(getResources().getColor(R.color.ColorPrimary));
-        addItemBuilder.titleColor(getResources().getColor(R.color.ColorPrimaryDark));
+        addItemBuilder.positiveColor(ContextCompat.getColor(this, R.color.ColorPrimary));
+        addItemBuilder.negativeColor(ContextCompat.getColor(this, R.color.ColorPrimary));
+        addItemBuilder.neutralColor(ContextCompat.getColor(this, R.color.ColorPrimary));
+        addItemBuilder.titleColor(ContextCompat.getColor(this,R.color.ColorPrimaryDark));
         addItemBuilder.inputType(InputType.TYPE_CLASS_TEXT);
         addItemBuilder.autoDismiss(true);
         addItemBuilder.input("add shopping item", "", new MaterialDialog.InputCallback() {
@@ -535,4 +536,5 @@ public class MainActivity extends AppCompatActivity {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         return (cm.getActiveNetworkInfo() != null);
     }
+
 }
