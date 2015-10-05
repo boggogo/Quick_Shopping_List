@@ -137,7 +137,6 @@ public class MainActivity extends AppCompatActivity {
                 shoppingListItems.remove(viewHolder.getAdapterPosition());
                 saveShoppingItems(name_of_shopping_list);
                 isListEmpty();
-                adapter.notifyDataSetChanged();
             }
         };
 
@@ -310,7 +309,6 @@ public class MainActivity extends AppCompatActivity {
                         shoppingListItems.add(cap+s.substring(1));
                         isListEmpty();
                         saveShoppingItems(name_of_shopping_list);
-                        adapter.notifyDataSetChanged();
                     }
                 }
 
@@ -507,10 +505,8 @@ public class MainActivity extends AppCompatActivity {
         }
         if(id == R.id.action_sortAlphabetically){
             Collections.sort(shoppingListItems, String.CASE_INSENSITIVE_ORDER);
-            adapter.notifyDataSetChanged();
             saveShoppingItems(name_of_shopping_list);
         }
-
         return super.onOptionsItemSelected(item);
     }
 
