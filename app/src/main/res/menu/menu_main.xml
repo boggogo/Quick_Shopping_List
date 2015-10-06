@@ -33,7 +33,7 @@
     <item
         android:id="@+id/action_rearrange"
         android:title="rearrange"
-        android:icon="@drawable/reorder"
+        android:icon="@drawable/reorder_not_active"
         app:showAsAction="ifRoom" />
 
     <item

@@ -124,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
                 super.onScrollStateChanged(recyclerView, newState);
                 actionButton.setHideAnimation(ActionButton.Animations.SCALE_DOWN);
                 actionButton.hide();
+                //if not currently scrolling
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     actionButton.setShowAnimation(ActionButton.Animations.SCALE_UP);
                     actionButton.show();
@@ -153,7 +154,6 @@ public class MainActivity extends AppCompatActivity {
                 adapter.notifyDataSetChanged();
                 return isArrangeEnabled;
             }
-
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 shoppingListItems.remove(viewHolder.getAdapterPosition());
@@ -162,7 +162,6 @@ public class MainActivity extends AppCompatActivity {
                 isListEmpty();
             }
         };
-
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
         //Swiping to remove item from the list----code end----
@@ -557,9 +556,9 @@ public class MainActivity extends AppCompatActivity {
 //                mRecyclerView.setBackgroundColor(getResources().getColor(R.color.fab_material_red_900));
             }else {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    item.setIcon(getResources().getDrawable(R.drawable.reorder, getTheme()));
+                    item.setIcon(getResources().getDrawable(R.drawable.reorder_not_active, getTheme()));
                 } else {
-                    item.setIcon(getResources().getDrawable(R.drawable.reorder));
+                    item.setIcon(getResources().getDrawable(R.drawable.reorder_not_active));
                 }
 //                mRecyclerView.setBackgroundColor(getResources().getColor(R.color.dark_gray));
                 isArrangeEnabled = false;
