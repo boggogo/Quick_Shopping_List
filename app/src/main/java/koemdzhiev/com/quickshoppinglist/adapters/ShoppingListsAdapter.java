@@ -22,13 +22,13 @@ import koemdzhiev.com.quickshoppinglist.utils.Constants;
  * Created by koemdzhiev on 18/07/2015.
  * this adapter will adapt the shopping lists
  */
-public class ShoppingListsAdapter extends RecyclerView.Adapter<ShoppingListsAdapter.ShoppingListsViewHolder>  {
+public class ShoppingListsAdapter extends RecyclerView.Adapter<ShoppingListsAdapter.ShoppingListsViewHolder> {
     private ArrayList<String> mShoppingListsItems;
     private Context mContext;
     private SharedPreferences mSharedPreferences;
     private SharedPreferences.Editor mEditor;
 
-    public ShoppingListsAdapter( Context context,ArrayList<String> items,SharedPreferences preferences, SharedPreferences.Editor editor) {
+    public ShoppingListsAdapter(Context context, ArrayList<String> items, SharedPreferences preferences, SharedPreferences.Editor editor) {
         mContext = context;
         mShoppingListsItems = items;
         mSharedPreferences = preferences;
@@ -38,7 +38,7 @@ public class ShoppingListsAdapter extends RecyclerView.Adapter<ShoppingListsAdap
 
     @Override
     public ShoppingListsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.shopping_lists_item_layout,parent,false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.shopping_lists_item_layout, parent, false);
         ShoppingListsAdapter.ShoppingListsViewHolder viewHolder = new ShoppingListsAdapter.ShoppingListsViewHolder(view);
 
         return viewHolder;
@@ -54,7 +54,7 @@ public class ShoppingListsAdapter extends RecyclerView.Adapter<ShoppingListsAdap
         return mShoppingListsItems.size();
     }
 
-    public class ShoppingListsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnLongClickListener {
+    public class ShoppingListsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         public TextView mShoppingList;
 
         public ShoppingListsViewHolder(View itemView) {
@@ -64,7 +64,7 @@ public class ShoppingListsAdapter extends RecyclerView.Adapter<ShoppingListsAdap
             mShoppingList = (TextView) itemView.findViewById(R.id.shopping_list_title);
         }
 
-        public void bindShoppingList(String item){
+        public void bindShoppingList(String item) {
             mShoppingList.setText(item);
         }
 
@@ -94,13 +94,13 @@ public class ShoppingListsAdapter extends RecyclerView.Adapter<ShoppingListsAdap
                     str[0] = input.toString().trim();
                     //add it to shoppingListItems and save to sharedPreferences
                     if (str[0].length() != 0) {
-                        if(!mShoppingListsItems.contains(str[0])){
+                        if (!mShoppingListsItems.contains(str[0])) {
                             String old = mShoppingListsItems.get(getAdapterPosition());
                             mShoppingListsItems.set(getAdapterPosition(), str[0]);
                             //Toast.makeText(mContext,mShoppingListsItems.get(getAdapterPosition()) + "old"+old,Toast.LENGTH_LONG).show();
                             copyShoppingItemsFromPrevious(old, str[0]);
                             saveShoppingLists();
-                        }else{
+                        } else {
                             //alert item already is existing
                             MaterialDialog.Builder builder = new MaterialDialog.Builder(mContext);
                             builder.title("Shopping list already exist!");
@@ -131,33 +131,33 @@ public class ShoppingListsAdapter extends RecyclerView.Adapter<ShoppingListsAdap
     private void saveShoppingLists() {
         //save array list
         mEditor.putInt(Constants.ARRAY_SHOPPING_LIST_SIZE_KEY, mShoppingListsItems.size());
-        for (int i =0;i<mShoppingListsItems.size();i++){
-            mEditor.putString(Constants.ARRAY_SHOPPING_LIST_KEY + i,mShoppingListsItems.get(i));
+        for (int i = 0; i < mShoppingListsItems.size(); i++) {
+            mEditor.putString(Constants.ARRAY_SHOPPING_LIST_KEY + i, mShoppingListsItems.get(i));
         }
         mEditor.apply();
         notifyDataSetChanged();
     }
 
-    private void copyShoppingItemsFromPrevious(String nameOfListToRead,String nameOfListToWrite) {
+    private void copyShoppingItemsFromPrevious(String nameOfListToRead, String nameOfListToWrite) {
         ArrayList<String> temp = new ArrayList<>();
         int arrayListSizeDefaultValue = 0;
         //copy from previous location
-        int size = mSharedPreferences.getInt(Constants.ARRAY_LIST_SIZE_KEY+nameOfListToRead, arrayListSizeDefaultValue);
-        for(int i = 0;i< size;i++){
-            temp.add(mSharedPreferences.getString(Constants.ARRAY_LIST_ITEM_KEY + nameOfListToRead + i,null));
+        int size = mSharedPreferences.getInt(Constants.ARRAY_LIST_SIZE_KEY + nameOfListToRead, arrayListSizeDefaultValue);
+        for (int i = 0; i < size; i++) {
+            temp.add(mSharedPreferences.getString(Constants.ARRAY_LIST_ITEM_KEY + nameOfListToRead + i, null));
         }
         //delete from previous location
-        for(int i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             mEditor.remove(Constants.ARRAY_LIST_ITEM_KEY + nameOfListToRead + i);
         }
         //mEditor.commit();
         //remove the array size key value
-        mEditor.remove(Constants.ARRAY_LIST_SIZE_KEY+nameOfListToRead);
+        mEditor.remove(Constants.ARRAY_LIST_SIZE_KEY + nameOfListToRead);
 
         //save to the new location
-        mEditor.putInt(Constants.ARRAY_LIST_SIZE_KEY+nameOfListToWrite, temp.size());
-        for (int i =0;i<temp.size();i++){
-            mEditor.putString(Constants.ARRAY_LIST_ITEM_KEY + nameOfListToWrite + i,temp.get(i));
+        mEditor.putInt(Constants.ARRAY_LIST_SIZE_KEY + nameOfListToWrite, temp.size());
+        for (int i = 0; i < temp.size(); i++) {
+            mEditor.putString(Constants.ARRAY_LIST_ITEM_KEY + nameOfListToWrite + i, temp.get(i));
         }
         mEditor.commit();
         notifyDataSetChanged();

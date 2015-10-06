@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -48,7 +49,7 @@ public class GroceryItemsAdapter_Rearrange extends RecyclerView.Adapter<GroceryI
         return mItems.size();
     }
 
-    public class ShoppingListViewHolder extends RecyclerView.ViewHolder{
+    public class ShoppingListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         public TextView mShoppingListItem;
         public TextView mEmptyTextView;
 
@@ -60,12 +61,17 @@ public class GroceryItemsAdapter_Rearrange extends RecyclerView.Adapter<GroceryI
 
             mEmptyTextView = (TextView)rootView.findViewById(R.id.list_empty);
             mEmptyTextView.setVisibility(View.INVISIBLE);
+            itemView.setOnClickListener(this);
         }
 
         public void bindShoppingList(String item){
             mShoppingListItem.setText(item);
         }
 
+        @Override
+        public void onClick(View view) {
+            Toast.makeText(mContext,"Press and hold on an item to rearrange!",Toast.LENGTH_LONG).show();
+        }
     }
 
 }

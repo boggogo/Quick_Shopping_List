@@ -166,7 +166,6 @@ public class ShoppingListsActivity extends AppCompatActivity implements View.OnC
                 deleteShoppingListItems(viewHolder.getAdapterPosition());
                 mShoppingLists.remove(viewHolder.getAdapterPosition());
                 saveShoppingItems();
-                isListEmpty();
                 mAdapter.notifyDataSetChanged();
             }
         };

@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "koemdzhiev.com.quickshoppinglist"
-        minSdkVersion 14
+        minSdkVersion 15
         targetSdkVersion 23
         versionCode 18
         versionName "1.8.4"
@@ -20,6 +20,7 @@ android {
 }
 repositories {
     maven { url "https://jitpack.io" }
+    mavenCentral()
 }
 
 dependencies {
@@ -33,4 +34,5 @@ dependencies {
     }
     compile 'com.github.shell-software:fab:1.1.2'
     compile 'com.ctrlplusz.anytextview:library:1.2'
+    compile 'com.hudomju:swipe-to-dismiss-undo:1.0'
 }

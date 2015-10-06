@@ -20,14 +20,16 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"/>
 
-    <CheckBox
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:text="@string/shopping_list_item_checkbox_label"
-        android:id="@+id/shoppingListCheckBox"
-        android:layout_centerVertical="true"
+        android:id="@+id/shoppingListBinIcon"
+        android:src="@drawable/bin_icon"
         android:layout_marginRight="15dp"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
+        android:paddingBottom="2dp"
+        android:paddingTop="2dp"
+        android:layout_alignParentEnd="false"
         android:checked="false"/>
 </RelativeLayout>

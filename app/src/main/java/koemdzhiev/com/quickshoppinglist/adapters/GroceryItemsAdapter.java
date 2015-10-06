@@ -10,8 +10,7 @@ import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,44 +59,29 @@ public class GroceryItemsAdapter extends RecyclerView.Adapter<GroceryItemsAdapte
         return mItems.size();
     }
 
-    public class ShoppingListViewHolder extends RecyclerView.ViewHolder implements CompoundButton.OnCheckedChangeListener, View.OnLongClickListener{
+    public class ShoppingListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
         public TextView mShoppingListItem;
-        public CheckBox mCheckBox;
+        public ImageView mImageView;
         public TextView mEmptyTextView;
 
         public ShoppingListViewHolder(View itemView) {
             super(itemView);
             mShoppingListItem = (TextView) itemView.findViewById(R.id.shoppingListItem);
-            mCheckBox = (CheckBox) itemView.findViewById(R.id.shoppingListCheckBox);
+            mImageView = (ImageView) itemView.findViewById(R.id.shoppingListBinIcon);
 
             View rootView = ((Activity)mContext).getWindow().getDecorView().findViewById(android.R.id.content);
 
             mEmptyTextView = (TextView)rootView.findViewById(R.id.list_empty);
             mEmptyTextView.setVisibility(View.INVISIBLE);
-            mCheckBox.setOnCheckedChangeListener(this);
+            mImageView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
         }
 
         public void bindShoppingList(String item){
             mShoppingListItem.setText(item);
-            mCheckBox.setChecked(false);
         }
 
 
-        @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            if(isChecked){
-                mItems.remove(getAdapterPosition());
-                if (getItemCount() == 0) {
-                    mEmptyTextView.setVisibility(View.VISIBLE);
-                }
-                else {
-                    mEmptyTextView.setVisibility(View.INVISIBLE);
-                }
-                saveShoppingItems(GroceryItemsAdapter.nameOfList);
-                notifyItemRemoved(getAdapterPosition());
-            }
-        }
 
         @Override
         public boolean onLongClick(View v) {
@@ -208,6 +192,19 @@ public class GroceryItemsAdapter extends RecyclerView.Adapter<GroceryItemsAdapte
             }
             addItemdialog.show();
             return true;
+        }
+
+        @Override
+        public void onClick(View view) {
+            mItems.remove(getAdapterPosition());
+            if (getItemCount() == 0) {
+                mEmptyTextView.setVisibility(View.VISIBLE);
+            }
+            else {
+                mEmptyTextView.setVisibility(View.INVISIBLE);
+            }
+            saveShoppingItems(GroceryItemsAdapter.nameOfList);
+            notifyItemRemoved(getAdapterPosition());
         }
     }
 
