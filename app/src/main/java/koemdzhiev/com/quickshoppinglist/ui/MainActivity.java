@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.speech.RecognitionListener;
@@ -37,6 +38,7 @@ import java.util.Collections;
 
 import koemdzhiev.com.quickshoppinglist.R;
 import koemdzhiev.com.quickshoppinglist.adapters.GroceryItemsAdapter;
+import koemdzhiev.com.quickshoppinglist.adapters.GroceryItemsAdapter_Rearrange;
 import koemdzhiev.com.quickshoppinglist.utils.Constants;
 import koemdzhiev.com.quickshoppinglist.utils.SimpleDividerItemDecoration;
 
@@ -50,7 +52,9 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences mSharedPreferences;
     private SharedPreferences.Editor mEditor;
     private TextView mEmptyTextView;
+    private boolean isArrangeEnabled = false;
     private GroceryItemsAdapter adapter;
+    private GroceryItemsAdapter_Rearrange adapter_rearrange;
     private ActionButton actionButton;
     private MaterialDialog addItemdialog = null;
     private MaterialDialog voiceInputDialog = null;
@@ -107,6 +111,8 @@ public class MainActivity extends AppCompatActivity {
         //read the array lists
         readShoppingItems(name_of_shopping_list);
         adapter = new GroceryItemsAdapter(this,shoppingListItems,mSharedPreferences,mEditor,name_of_shopping_list);
+        adapter_rearrange = new GroceryItemsAdapter_Rearrange(this,shoppingListItems,mEditor,name_of_shopping_list);
+
         mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(getApplicationContext()));
         mRecyclerView.setAdapter(adapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -125,17 +131,34 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         //Swiping to remove item from the list--------
-        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT){
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN,
+                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT){
 
             @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                return false;
+            public boolean isLongPressDragEnabled() {
+                return isArrangeEnabled;
+            }
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder selected, RecyclerView.ViewHolder target) {
+                final int from = selected.getAdapterPosition();
+                final int to = target.getAdapterPosition();
+                Collections.swap(shoppingListItems, from, to);
+                if(isArrangeEnabled){
+                    adapter_rearrange.notifyItemMoved(from,to);
+                }else {
+                    adapter.notifyItemMoved(from, to);
+                }
+                saveShoppingItems(name_of_shopping_list);
+                adapter.notifyDataSetChanged();
+                return isArrangeEnabled;
             }
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 shoppingListItems.remove(viewHolder.getAdapterPosition());
                 saveShoppingItems(name_of_shopping_list);
+                notifyAnAdapter();
                 isListEmpty();
             }
         };
@@ -180,18 +203,17 @@ public class MainActivity extends AppCompatActivity {
         int arrayListSizeDefaultValue = 0;
         int size = mSharedPreferences.getInt(Constants.ARRAY_LIST_SIZE_KEY+nameOfListToRead, arrayListSizeDefaultValue);
         for(int i = 0;i< size;i++){
-            shoppingListItems.add(mSharedPreferences.getString(Constants.ARRAY_LIST_ITEM_KEY + nameOfListToRead + i,null));
+            shoppingListItems.add(mSharedPreferences.getString(Constants.ARRAY_LIST_ITEM_KEY + nameOfListToRead + i, null));
         }
     }
 
     private void saveShoppingItems(String nameOfListToRead) {
         //save array list
-        mEditor.putInt(Constants.ARRAY_LIST_SIZE_KEY+nameOfListToRead, shoppingListItems.size());
+        mEditor.putInt(Constants.ARRAY_LIST_SIZE_KEY + nameOfListToRead, shoppingListItems.size());
         for (int i =0;i<shoppingListItems.size();i++){
             mEditor.putString(Constants.ARRAY_LIST_ITEM_KEY + nameOfListToRead + i,shoppingListItems.get(i));
         }
         mEditor.commit();
-        adapter.notifyDataSetChanged();
     }
 
     private void buildAlertDialog() {
@@ -220,6 +242,7 @@ public class MainActivity extends AppCompatActivity {
                         shoppingListItems.add(str[0]);
                     }
                     saveShoppingItems(name_of_shopping_list);
+                    notifyAnAdapter();
                     isListEmpty();
                     dialog.dismiss();
                 } else {
@@ -309,6 +332,7 @@ public class MainActivity extends AppCompatActivity {
                         shoppingListItems.add(cap+s.substring(1));
                         isListEmpty();
                         saveShoppingItems(name_of_shopping_list);
+                        notifyAnAdapter();
                     }
                 }
 
@@ -474,6 +498,7 @@ public class MainActivity extends AppCompatActivity {
                     super.onPositive(dialog);
                     shoppingListItems.clear();
                     saveShoppingItems(name_of_shopping_list);
+                    notifyAnAdapter();
                 }
             });
             MaterialDialog dialog = builder.build();
@@ -506,8 +531,49 @@ public class MainActivity extends AppCompatActivity {
         if(id == R.id.action_sortAlphabetically){
             Collections.sort(shoppingListItems, String.CASE_INSENSITIVE_ORDER);
             saveShoppingItems(name_of_shopping_list);
+            notifyAnAdapter();
+        }
+        if(id == R.id.action_rearrange){
+            if(isArrangeEnabled){
+
+                isArrangeEnabled = false;
+                mRecyclerView.setAdapter(adapter);
+//                Toast.makeText(MainActivity.this,"inactive", Toast.LENGTH_LONG).show();
+            }else{
+
+                isArrangeEnabled = true;
+                mRecyclerView.setAdapter(adapter_rearrange);
+//                Toast.makeText(MainActivity.this,"active", Toast.LENGTH_LONG).show();
+            }
+        }
+        if(id == R.id.action_rearrange){
+            if(isArrangeEnabled){
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    item.setIcon(getResources().getDrawable(R.drawable.reorder_icon_active, getTheme()));
+                } else {
+                    item.setIcon(getResources().getDrawable(R.drawable.reorder_icon_active));
+                }
+                isArrangeEnabled = true;
+//                mRecyclerView.setBackgroundColor(getResources().getColor(R.color.fab_material_red_900));
+            }else {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    item.setIcon(getResources().getDrawable(R.drawable.reorder, getTheme()));
+                } else {
+                    item.setIcon(getResources().getDrawable(R.drawable.reorder));
+                }
+//                mRecyclerView.setBackgroundColor(getResources().getColor(R.color.dark_gray));
+                isArrangeEnabled = false;
+            }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void notifyAnAdapter() {
+        if(isArrangeEnabled){
+            adapter_rearrange.notifyDataSetChanged();
+        }else {
+            adapter.notifyDataSetChanged();
+        }
     }
 
     private String getAllShoppingItemsToSend() {

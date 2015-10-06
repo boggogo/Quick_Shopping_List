@@ -31,6 +31,12 @@
           android:orderInCategory="900"
           app:showAsAction="never"/>
     <item
+        android:id="@+id/action_rearrange"
+        android:title="rearrange"
+        android:icon="@drawable/reorder"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/action_switch"
         android:title="@string/action_switch"
         app:actionLayout="@layout/switch_layout"
