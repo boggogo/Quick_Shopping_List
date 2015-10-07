@@ -25,3 +25,5 @@
     public static int e(...);
 }
 -dontwarn org.slf4j.**
+-keep class com.google.android.gms.** { *; }
+-dontwarn com.google.android.gms.**

@@ -17,6 +17,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
 }
 repositories {
     maven { url "https://jitpack.io" }
@@ -28,11 +29,13 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.0.1'
     compile 'com.google.android.gms:play-services:8.1.0'
     compile 'com.android.support:recyclerview-v7:23.0.1'
+    //Two libaries needed for the material design dialogs
     compile 'com.nineoldandroids:library:2.4.+'
     compile('com.afollestad.material-dialogs:core:0.8.1.0@aar') {
         transitive = true
     }
+    //FAB action button libary
     compile 'com.github.shell-software:fab:1.1.2'
+    //custom text view to apply custom font easily
     compile 'com.ctrlplusz.anytextview:library:1.2'
-    compile 'com.hudomju:swipe-to-dismiss-undo:1.0'
 }
