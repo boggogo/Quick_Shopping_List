@@ -15,6 +15,7 @@ import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,9 +23,11 @@ import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -45,7 +48,6 @@ import koemdzhiev.com.quickshoppinglist.utils.SimpleDividerItemDecoration;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG =  MainActivity.class.getSimpleName();
-    private Toolbar mToolbar;
     private RecyclerView mRecyclerView;
     private String name_of_shopping_list;
     private ArrayList<String> shoppingListItems;
@@ -96,12 +98,12 @@ public class MainActivity extends AppCompatActivity {
         //read if voice is enabled
         mIsVoiceEnabled = mSharedPreferences.getBoolean(Constants.IS_VOICE_ENABLED,false);
         actionButton.setOnClickListener(mOnClickListener);
-        mToolbar = (Toolbar)findViewById(R.id.tool_bar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
         //get the name of the list to read/save
         name_of_shopping_list = getIntent().getStringExtra(Constants.NAME_OF_SHOPPING_LIST);
-        mToolbar.setTitle(name_of_shopping_list+ " list");
+        toolbar.setTitle(name_of_shopping_list + " list");
         //Toast.makeText(this,name_of_shopping_list,Toast.LENGTH_SHORT).show();
-        setSupportActionBar(mToolbar);
+        setSupportActionBar(toolbar);
         if(getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mRecyclerView = (RecyclerView)findViewById(R.id.recyclerView);
@@ -487,8 +489,8 @@ public class MainActivity extends AppCompatActivity {
         }
         if(id == R.id.action_clearAll){
             MaterialDialog.Builder builder = new MaterialDialog.Builder(this);
-            builder.title("Clear All");
-            builder.content("Are you sure that you want to remove all shopping items from the list?");
+            builder.title(R.string.dialog_message_clear_all_title);
+            builder.content(R.string.dialog_message_clear_all_message);
             builder.positiveText("YES");
             builder.negativeText("NO");
             builder.callback(new MaterialDialog.ButtonCallback() {
@@ -532,39 +534,58 @@ public class MainActivity extends AppCompatActivity {
             saveShoppingItems(name_of_shopping_list);
             notifyAnAdapter();
         }
+
         if(id == R.id.action_rearrange){
             if(isArrangeEnabled){
-
-                isArrangeEnabled = false;
-                mRecyclerView.setAdapter(adapter);
-//                Toast.makeText(MainActivity.this,"inactive", Toast.LENGTH_LONG).show();
-            }else{
-
-                isArrangeEnabled = true;
-                mRecyclerView.setAdapter(adapter_rearrange);
-//                Toast.makeText(MainActivity.this,"active", Toast.LENGTH_LONG).show();
-            }
-        }
-        if(id == R.id.action_rearrange){
-            if(isArrangeEnabled){
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    item.setIcon(getResources().getDrawable(R.drawable.reorder_icon_active, getTheme()));
-                } else {
-                    item.setIcon(getResources().getDrawable(R.drawable.reorder_icon_active));
-                }
-                isArrangeEnabled = true;
-//                mRecyclerView.setBackgroundColor(getResources().getColor(R.color.fab_material_red_900));
-            }else {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     item.setIcon(getResources().getDrawable(R.drawable.reorder_not_active, getTheme()));
                 } else {
                     item.setIcon(getResources().getDrawable(R.drawable.reorder_not_active));
                 }
-//                mRecyclerView.setBackgroundColor(getResources().getColor(R.color.dark_gray));
+
                 isArrangeEnabled = false;
+                mRecyclerView.setAdapter(adapter);
+
+            }else{
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    item.setIcon(getResources().getDrawable(R.drawable.reorder_icon_active, getTheme()));
+                } else {
+                    item.setIcon(getResources().getDrawable(R.drawable.reorder_icon_active));
+                }
+
+                isArrangeEnabled = true;
+                mRecyclerView.setAdapter(adapter_rearrange);
+                showHowToDragDialog();
             }
+
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showHowToDragDialog() {
+        AlertDialog.Builder adb = new AlertDialog.Builder(MainActivity.this);
+        LayoutInflater adbInflater = LayoutInflater.from(MainActivity.this);
+        View checkboxView = adbInflater.inflate(R.layout.checkbox,null);
+        final CheckBox dontShowAgain = (CheckBox) checkboxView.findViewById(R.id.skip);
+        adb.setView(checkboxView);
+        adb.setTitle(getString(R.string.dialog_message_rearrange_title));
+        adb.setMessage(getString(R.string.dialog_message_rearrange_message));
+        adb.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                Boolean checkBoxResult = false;
+                if (dontShowAgain.isChecked()) {
+                    checkBoxResult = true;
+                }
+
+                mEditor.putBoolean(Constants.IF_SKIP_MESSAGE, checkBoxResult);
+                // Commit the edits!
+                mEditor.commit();
+            }
+        });
+
+        Boolean skipMessage = mSharedPreferences.getBoolean(Constants.IF_SKIP_MESSAGE, false);
+        if (!skipMessage)
+            adb.show();
     }
 
     private void notifyAnAdapter() {

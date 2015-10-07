@@ -70,7 +70,7 @@ public class GroceryItemsAdapter_Rearrange extends RecyclerView.Adapter<GroceryI
 
         @Override
         public void onClick(View view) {
-            Toast.makeText(mContext,"Press and hold on an item to rearrange!",Toast.LENGTH_LONG).show();
+            Toast.makeText(mContext,"To rearrange, long press on an item and drag!",Toast.LENGTH_SHORT).show();
         }
     }
 
