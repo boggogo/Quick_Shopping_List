@@ -69,9 +69,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             if(mIsVoiceEnabled) {
-                buildVoiceInputDialog();
+                showVoiceInputDialog();
             }else{
-                buildAlertDialog();
+                showAlertAddShoppingItemDialog();
             }
         }
     };
@@ -161,14 +161,14 @@ public class MainActivity extends AppCompatActivity {
                 shoppingListItems.remove(viewHolder.getAdapterPosition());
                 saveShoppingItems(name_of_shopping_list);
                 notifyAnAdapter();
-                isListEmpty();
+                triggerEmptyListView();
             }
         };
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
         //Swiping to remove item from the list----code end----
         //check weather to show the empty text view
-        isListEmpty();
+        triggerEmptyListView();
 
 
     }
@@ -178,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        isListEmpty();
+        triggerEmptyListView();
     }
 
     @Override
@@ -212,12 +212,12 @@ public class MainActivity extends AppCompatActivity {
         //save array list
         mEditor.putInt(Constants.ARRAY_LIST_SIZE_KEY + nameOfListToRead, shoppingListItems.size());
         for (int i =0;i<shoppingListItems.size();i++){
-            mEditor.putString(Constants.ARRAY_LIST_ITEM_KEY + nameOfListToRead + i,shoppingListItems.get(i));
+            mEditor.putString(Constants.ARRAY_LIST_ITEM_KEY + nameOfListToRead + i, shoppingListItems.get(i));
         }
         mEditor.commit();
     }
 
-    private void buildAlertDialog() {
+    private void showAlertAddShoppingItemDialog() {
         final int[] choosenQuantity = {1};
         final String[] str = {""};
         final MaterialDialog.Builder addItemBuilder = new MaterialDialog.Builder(this);
@@ -244,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     saveShoppingItems(name_of_shopping_list);
                     notifyAnAdapter();
-                    isListEmpty();
+                    triggerEmptyListView();
                     dialog.dismiss();
                 } else {
                     Toast.makeText(MainActivity.this, "no item description!", Toast.LENGTH_LONG).show();
@@ -306,7 +306,7 @@ public class MainActivity extends AppCompatActivity {
         addItemdialog.show();
     }
 
-    private void buildVoiceInputDialog() {
+    private void showVoiceInputDialog() {
         //final boolean[] voiceInput_error_flag = {false};
         //check if there is network first
         if(isNetworkConnected()){
@@ -331,7 +331,7 @@ public class MainActivity extends AppCompatActivity {
                         //Capitalize the first letter
                         String cap = s.substring(0,1).toUpperCase();
                         shoppingListItems.add(cap+s.substring(1));
-                        isListEmpty();
+                        triggerEmptyListView();
                         saveShoppingItems(name_of_shopping_list);
                         notifyAnAdapter();
                     }
@@ -429,6 +429,16 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void showNoListItemsAlertDialog(){
+        MaterialDialog.Builder builder = new MaterialDialog.Builder(this).title("The list is empty!").content("No shopping list items!")
+                .positiveText("OK").callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        super.onPositive(dialog);
+                    }
+                });
+        builder.show();
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -449,10 +459,10 @@ public class MainActivity extends AppCompatActivity {
                         buttonView.setText("Voice: " + getResources().getString(resId));
                         actionButton.setOnClickListener(mOnClickListener);
 
-                        if(isChecked){
-                            mEditor.putBoolean(Constants.IS_VOICE_ENABLED,true);
-                        }else{
-                            mEditor.putBoolean(Constants.IS_VOICE_ENABLED,false);
+                        if (isChecked) {
+                            mEditor.putBoolean(Constants.IS_VOICE_ENABLED, true);
+                        } else {
+                            mEditor.putBoolean(Constants.IS_VOICE_ENABLED, false);
                         }
                         mEditor.apply();
                         //Toast.makeText(MainActivity.this, "Switch", Toast.LENGTH_SHORT).show();
@@ -472,20 +482,27 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_send_sms) {
-            String allShoppingItems = getAllShoppingItemsToSend();
-            Intent sendIntent = new Intent(Intent.ACTION_VIEW);
-            sendIntent.setData(Uri.parse("sms:"));
-            sendIntent.putExtra("sms_body","Shopping list:\n\n" + allShoppingItems);
-            startActivity(sendIntent);
-            return true;
+            if(!ifListEmpty()) {
+                String allShoppingItems = getAllShoppingItemsToSend();
+                Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+                sendIntent.setData(Uri.parse("sms:"));
+                sendIntent.putExtra("sms_body", "Shopping list:\n\n" + allShoppingItems);
+                startActivity(sendIntent);
+            }else{
+                showNoListItemsAlertDialog();
+            }
         }
         if(id == R.id.action_send_email){
-            String allShoppingItems = getAllShoppingItemsToSend();
-            Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
-                    "mailto", "", null));
-            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Shopping list");
-            emailIntent.putExtra(Intent.EXTRA_TEXT, allShoppingItems);
-            startActivity(Intent.createChooser(emailIntent, "Send email..."));
+            if(!ifListEmpty()) {
+                String allShoppingItems = getAllShoppingItemsToSend();
+                Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+                        "mailto", "", null));
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Shopping list");
+                emailIntent.putExtra(Intent.EXTRA_TEXT, allShoppingItems);
+                startActivity(Intent.createChooser(emailIntent, "Send email..."));
+            }else{
+                showNoListItemsAlertDialog();
+            }
         }
         if(id == R.id.action_clearAll){
             MaterialDialog.Builder builder = new MaterialDialog.Builder(this);
@@ -497,9 +514,14 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onPositive(MaterialDialog dialog) {
                     super.onPositive(dialog);
-                    shoppingListItems.clear();
-                    saveShoppingItems(name_of_shopping_list);
-                    notifyAnAdapter();
+                    if(!ifListEmpty()) {
+                        shoppingListItems.clear();
+                        saveShoppingItems(name_of_shopping_list);
+                        notifyAnAdapter();
+                        triggerEmptyListView();
+                    }else{
+                        showNoListItemsAlertDialog();
+                    }
                 }
             });
             MaterialDialog dialog = builder.build();
@@ -509,7 +531,7 @@ public class MainActivity extends AppCompatActivity {
             String itemsToBeSend = getAllShoppingItemsToSend();
 
             if(itemsToBeSend.equals("")){
-                Toast.makeText(MainActivity.this,"no shopping items!",Toast.LENGTH_LONG).show();
+                showNoListItemsAlertDialog();
             }else {
                 Intent intent = new Intent(Intent.ACTION_INSERT)
                         .setData(CalendarContract.Events.CONTENT_URI)
@@ -530,9 +552,13 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         }
         if(id == R.id.action_sortAlphabetically){
-            Collections.sort(shoppingListItems, String.CASE_INSENSITIVE_ORDER);
-            saveShoppingItems(name_of_shopping_list);
-            notifyAnAdapter();
+            if(!ifListEmpty()) {
+                Collections.sort(shoppingListItems, String.CASE_INSENSITIVE_ORDER);
+                saveShoppingItems(name_of_shopping_list);
+                notifyAnAdapter();
+            }else{
+                showNoListItemsAlertDialog();
+            }
         }
 
         if(id == R.id.action_rearrange){
@@ -606,13 +632,17 @@ public class MainActivity extends AppCompatActivity {
         return allShoppingItems;
     }
 
-    private void isListEmpty() {
+    private void triggerEmptyListView() {
         if (mRecyclerView.getAdapter().getItemCount() == 0) {
             mEmptyTextView.setVisibility(View.VISIBLE);
         }
         else {
             mEmptyTextView.setVisibility(View.INVISIBLE);
         }
+    }
+
+    private  boolean ifListEmpty(){
+        return shoppingListItems.size() == 0;
     }
     private boolean isNetworkConnected() {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
