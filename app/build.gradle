@@ -8,8 +8,8 @@ android {
         applicationId "koemdzhiev.com.quickshoppinglist"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 22
-        versionName "1.8.4"
+        versionCode 23
+        versionName "1.8.5"
     }
     buildTypes {
         release {
