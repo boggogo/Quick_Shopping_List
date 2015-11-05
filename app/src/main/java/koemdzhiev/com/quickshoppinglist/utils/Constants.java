@@ -18,4 +18,6 @@ public class Constants {
     public static final String APP_NAME_KEY = "Easy_Shopping_Pal";
 
     public static final String IF_SKIP_MESSAGE = "if_skip_message";
+
+    public static final String IS_NEW_USER = "is_it_a_new_user";
 }

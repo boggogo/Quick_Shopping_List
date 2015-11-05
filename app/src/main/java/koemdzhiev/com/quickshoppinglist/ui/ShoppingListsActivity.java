@@ -50,6 +50,7 @@ public class ShoppingListsActivity extends AppCompatActivity implements View.OnC
     private IabHelper mHelper;
     private String SKU_REMOVE_ADDS = "remove_adds_sku";
     private boolean mIsRemoveAdds = false;
+    private boolean isNewUser;
     private   IabHelper.QueryInventoryFinishedListener mGotInventoryListener = new IabHelper.QueryInventoryFinishedListener() {
         @Override
         public void onQueryInventoryFinished(IabResult result, Inventory inventory) {
@@ -119,6 +120,13 @@ public class ShoppingListsActivity extends AppCompatActivity implements View.OnC
         mEmptyTextView.setVisibility(View.INVISIBLE);
         mSharedPreferences = getSharedPreferences(Constants.APP_NAME_KEY, MODE_PRIVATE);
         mEditor = mSharedPreferences.edit();
+        isNewUser = mSharedPreferences.getBoolean(Constants.IS_NEW_USER,true);
+        if(isNewUser){
+            Intent intent = new Intent(ShoppingListsActivity.this,IsNewUserActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        }
         actionButton = (ActionButton)findViewById(R.id.buttonFloat);
         actionButton.setButtonColor(getResources().getColor(R.color.ColorPrimary));
         actionButton.setButtonColorPressed(getResources().getColor(R.color.ColorPrimaryDark));
@@ -133,9 +141,6 @@ public class ShoppingListsActivity extends AppCompatActivity implements View.OnC
         }
         //read the array lists
         readShoppingItems();
-//        Toast.makeText(this, ""+mSharedPreferences.getString(Constants.ARRAY_LIST_ITEM_KEY+mShoppingLists.get(0)+0,""), Toast.LENGTH_LONG).show();
-//        mShoppingLists.add("TEST");
-//        mShoppingLists.add("TEST");
         mAdapter = new ShoppingListsAdapter(ShoppingListsActivity.this,mShoppingLists,mSharedPreferences,mEditor);
         mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(getApplicationContext()));
         mRecyclerView.setAdapter(mAdapter);

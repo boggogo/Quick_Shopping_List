@@ -1,16 +1,20 @@
 package koemdzhiev.com.quickshoppinglist.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import koemdzhiev.com.quickshoppinglist.R;
 
 public class HowToActivity extends AppCompatActivity {
     private TextView mHowToUse;
+    private Button mGoToTheAppButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,6 +23,16 @@ public class HowToActivity extends AppCompatActivity {
 
         mHowToUse = (TextView)findViewById(R.id.textView4);
         mHowToUse.setMovementMethod(new ScrollingMovementMethod());
+        mGoToTheAppButton = (Button)findViewById(R.id.goToAppButton);
+        mGoToTheAppButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(HowToActivity.this,ShoppingListsActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
