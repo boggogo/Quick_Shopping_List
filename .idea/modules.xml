@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/QuickShoppingList.iml" filepath="$PROJECT_DIR$/QuickShoppingList.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Quick_Shopping_List.iml" filepath="$PROJECT_DIR$/Quick_Shopping_List.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
